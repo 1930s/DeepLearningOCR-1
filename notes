@@ -1,0 +1,22 @@
+groys, 0035, second column: a yud is misplaced to a later line
+groys, 0047: several instances of failure to combine vertically or wrong line
+
+arum vokzal is 02344.
+
+Tue Aug 28 13:31:49 EDT 2018
+	CS499 project: introduce deep learning as a new classifier.
+	Class web page: http://selab.netlab.uky.edu/homepage/CS499fall18.htm
+
+	I have an OCR program written in C.  It can be trained to recognize letters
+	from any alphabet, any font.  The classifier I use is nearest-neighbor in a
+	26-dimensional Euclidean space, where each dimension is the fill percent of
+	one of the 5x5 regions of the rectangle surrounding the letter, and one
+	dimension represents the ratio of height to width.  I would like to give the
+	user an option to choose other classifiers.  In particular, I would like a
+	deep-learning classifier.  The classifier can be written in Python, but it
+	must integrate with the existing C code.  The code itself is in
+	~raphael/projects/ocr/ , available in the MultiLab.
+
+	Team 8: Leah Woodworth, Atanas Golev, Blake Price
+	Team 16: Greg McIntosh, John Geddes, Taylor Goldhahn
+
