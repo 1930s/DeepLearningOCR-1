@@ -2,7 +2,7 @@
 gtkDisplay.c
 reference: http://developer.gnome.org/doc/API/2.0/gtk/
 
-Copyright © Raphael Finkel 2007-2010 raphael@cs.uky.edu  
+Copyright © Raphael Finkel 2007-2010 raphael@cs.uky.edu
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 // #include <fribidi/fribidi.h>
-#include "fribidi/fribidi.h" // use local copy; not everyone has installed this
+#include "../fribidi/fribidi.h" // use local copy; not everyone has installed this
 #include <iconv.h>
 // #include "gtk/gtk.h"
 #include <gtk/gtk.h>
@@ -237,7 +237,7 @@ void displayText(void *theButton, int *visual) { // from signal
 		GtkTextIter startIter, endIter;
 		gdouble myValue = -1.0, myUpper, myPageSize;
 		g_object_get(oscroll,
-			"value", &myValue, 
+			"value", &myValue,
 			"upper", &myUpper,
 			"page-size", &myPageSize,
 			NULL);
@@ -265,7 +265,7 @@ void displayText(void *theButton, int *visual) { // from signal
 		if (0 && RTL != hasRTL(lineBuf)) { //  direction is wrong, do it again.
 			// fprintf(stderr, "switching in line to %s\n",
 			// 	RTL ? "LTR" : "RTL");
-			RTL = 1 - RTL; // just temporarily 
+			RTL = 1 - RTL; // just temporarily
 			filled = collectText(curText->glyphs->next, lineBuf, BUFSIZ);
 			RTL = 1 - RTL;
 		}
@@ -288,10 +288,10 @@ void displayText(void *theButton, int *visual) { // from signal
 			fprintf(stdout, "%s", spaces);
 			spaces[indent] = ' ';
 		}
-	//  bidi algorithm 
+	//  bidi algorithm
 		/* */
 		// fprintf(stderr, "before: %s\n", lineBuf);
-		// convert UTF8 to UCS4: lineBuf to UCS4Buf 
+		// convert UTF8 to UCS4: lineBuf to UCS4Buf
 		FriBidiChar *UCS4Buf =
 			(FriBidiChar *) calloc(filled+10, sizeof(FriBidiChar));
 		int length = fribidi_utf8_to_unicode(lineBuf, filled+1, UCS4Buf);
@@ -350,7 +350,7 @@ void scrollChanged(GtkAdjustment *scrollAdjustment, gpointer dummy) {
 //	if oScrollFraction is set (by displayText), believe it.
 	if (oScrollFraction > 0.0) {
 		g_object_get(oscroll,
-			"value", &myValue, 
+			"value", &myValue,
 			"upper", &myUpper,
 			"page-size", &myPageSize,
 			NULL);
@@ -361,16 +361,16 @@ void scrollChanged(GtkAdjustment *scrollAdjustment, gpointer dummy) {
 	}
 //  get the values of the moved scroller
 	g_object_get(scrollAdjustment,
-		"value", &myValue, 
+		"value", &myValue,
 		"upper", &myUpper,
 		"page-size", &myPageSize,
 		NULL);
 	gdouble fraction = myValue / (myUpper - myPageSize);
 	// fprintf(stdout, "scroll changed to %0.5f \n", fraction);
 //  get relevant values of the other scroller
-	GtkObject *otherScroller = 
+	GtkObject *otherScroller =
 		(scrollAdjustment == (GtkAdjustment *) oscroll) ? pscroll : oscroll;
-	g_object_get(otherScroller, 
+	g_object_get(otherScroller,
 		"upper", &otherUpper,
 		"page-size", &otherPageSize,
 		NULL);
@@ -523,7 +523,7 @@ void GUI(int col) {
 			gtk_layout_put(infoLayout, title, 0, 0);
 			infoGuessValue = (GtkWidget *) gtk_label_new("No guess");
 			gtk_widget_modify_font(infoGuessValue,
-				pango_font_description_from_string("FreeSans 16")); 
+				pango_font_description_from_string("FreeSans 16"));
 			gtk_layout_put(infoLayout, infoGuessValue, 0, 30);
 			infoNewValue = (GtkWidget *) gtk_entry_new();
 			gtk_layout_put(infoLayout, infoNewValue, 0, 60);
@@ -594,7 +594,7 @@ void GUI(int col) {
 			textView = gtk_text_view_new();
 			textBuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textView));
 			gtk_widget_modify_font(textView,
-				pango_font_description_from_string("FreeSans 16")); 
+				pango_font_description_from_string("FreeSans 16"));
 			oscroll = gtk_adjustment_new(0,0,0,0,0,0);
 			GtkWidget *textScroller =
 				gtk_scrolled_window_new(NULL, (GtkAdjustment *) oscroll);

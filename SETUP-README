@@ -1,0 +1,13 @@
+Windows:
+	Install Linux subsystem
+	download main folder of ~raphael/projects/ocr/
+		exclude lots of folders
+	"make clean"
+	"make default"
+	keep doing "make default" and installing libraries until it compiles
+		you can now run batch (terminal) versions of this program
+
+	Download Xming
+	Run Xming
+	"export DISPLAY=:0"
+		you can now run interactive (GUI) versions of this program
