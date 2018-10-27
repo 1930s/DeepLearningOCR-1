@@ -1,7 +1,7 @@
 /*
 readPicture.c: read tiff file into internal format
 
-Copyright © Raphael Finkel 2007-2010 raphael@cs.uky.edu  
+Copyright © Raphael Finkel 2007-2010 raphael@cs.uky.edu
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -152,7 +152,7 @@ void shearPicture() {
 	shear = 1;
 	newLights = countLight(shear);
 	// fprintf(stderr, "newLights %d, bestLights %d\n", newLights, bestLights);
-	if (newLights > bestLights) { 
+	if (newLights > bestLights) {
 		while (newLights > bestLights && shear <= MAXSHEAR) {// walk upwards
 			bestShear = shear;
 			bestLights = newLights;
@@ -177,8 +177,8 @@ void shearPicture() {
 			bestShear = 0;
 		}
 	}
-	fprintf(stderr, "best shear is %d; we get %d light lines\n", bestShear,
-		bestLights);
+	/* fprintf(stderr, "best shear is %d; we get %d light lines\n", bestShear,
+		bestLights); */
 	// adjust both the raster and the image.
 	for (col = 0; col < width; col += 1) {
 		int correction = (col*bestShear)/SHEARSCALE;

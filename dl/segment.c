@@ -1,7 +1,7 @@
 /*
 segment.c: chop the raster into pieces.
 
-Copyright © Raphael Finkel 2007-2010 raphael@cs.uky.edu  
+Copyright © Raphael Finkel 2007-2010 raphael@cs.uky.edu
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -225,7 +225,7 @@ glyph_t *insertGlyph(int left, int right, int top, int bottom, lineHeaderList *t
 			tryLine->leftBorder = MIN(tryLine->leftBorder, left);
 			tryLine->rightBorder = MAX(tryLine->rightBorder, right);
 			glyph_t *curGlyphPtr; // first entry in line is a dummy
-			for (curGlyphPtr = tryLine->glyphs; curGlyphPtr->next; 
+			for (curGlyphPtr = tryLine->glyphs; curGlyphPtr->next;
 					curGlyphPtr = curGlyphPtr->next) { // each known glyph on line
 				// fprintf(stderr, "trying a glyph at %d\n",
 				//  	curGlyphPtr->next->left);
@@ -236,7 +236,7 @@ glyph_t *insertGlyph(int left, int right, int top, int bottom, lineHeaderList *t
 					// 	left, right, curGlyphPtr->next->left, curGlyphPtr->next->right);
 					// fprintf(stderr, "distance from neigbor in x: %d y: %d\n",
 					// 	newGlyphPtr->next->left - right,
-					// 	MIN(abs(newGlyphPtr->next->bottom - bottom), 
+					// 	MIN(abs(newGlyphPtr->next->bottom - bottom),
 					// 		abs(newGlyphPtr->next->top - top))
 					// 	);
 					break; // we found the right position in line
@@ -370,11 +370,11 @@ void findLinesHarder(int top, int bottom, int left, int right)  {
 	if (minBlackCount < SOMEDARK) {
 		if (minBlackRow-1-top >= minGlyphHeight) {
 			// fprintf(stderr, "\tsplit above row %d\n", minBlackRow);
-			findCells(top, minBlackRow-1, left, right); 
+			findCells(top, minBlackRow-1, left, right);
 		}
 		if (bottom-(minBlackRow+1) >= minGlyphHeight) {
 			// fprintf(stderr, "\tsplit below row %d\n", minBlackRow);
-			findCells(minBlackRow+1, bottom, left, right); 
+			findCells(minBlackRow+1, bottom, left, right);
 		}
 	}
 } // findLinesHarder
@@ -430,7 +430,7 @@ int overlapVertical(lineHeaderList *first, lineHeaderList *second) {
 void refillLine(lineHeaderList *aLineHeader) {
 	// refill all tuples in the line
 	glyph_t	*curGlyphPtr;
-	for (curGlyphPtr = aLineHeader->line->glyphs->next; curGlyphPtr->next; 
+	for (curGlyphPtr = aLineHeader->line->glyphs->next; curGlyphPtr->next;
 				curGlyphPtr = curGlyphPtr->next) { // each actual glyph on line
 		if (curGlyphPtr->tuple)
 			refillTuple(curGlyphPtr, curGlyphPtr->tuple);
@@ -441,7 +441,7 @@ void adjustLineStats(textLine *aLine) {
 	glyph_t *curGlyphPtr;
 	int top=INFTY, bottom=-INFTY, left=INFTY, right=-INFTY;
 	// fprintf(stderr, "adjusting line ");
-	for (curGlyphPtr = aLine->glyphs->next; curGlyphPtr; 
+	for (curGlyphPtr = aLine->glyphs->next; curGlyphPtr;
 			curGlyphPtr = curGlyphPtr->next) { // each glyph on line
 		// fprintf(stderr, "(%d, %d) ", curGlyphPtr->left, curGlyphPtr->top);
 		top = MIN(top, curGlyphPtr->top);
@@ -461,7 +461,7 @@ int verticallyClose(glyph_t *aGlyph, textLine *aLine, textLine *nextLine) {
 	// better
 	if (aLine->end == aLine->glyphs) return true; // aLine is empty
 	// glyph_t *otherGlyph = aLine->end;
-	if (aLine->bottom >= aGlyph->top && 
+	if (aLine->bottom >= aGlyph->top &&
 			aLine->bottom <= aGlyph->bottom)
 		return true; // aGlyph within aLine
 	if (aGlyph->bottom >= aLine->top &&
@@ -469,7 +469,7 @@ int verticallyClose(glyph_t *aGlyph, textLine *aLine, textLine *nextLine) {
 		return true; // aLine within aGlyph
 	/*
 	if (MIN(abs(aGlyph->top - aLine->bottom),
-			abs(aGlyph->bottom - aLine->top)) < glyphHeight/3) 
+			abs(aGlyph->bottom - aLine->top)) < glyphHeight/3)
 		return true;  // fairly close vertically
 	*/
 	// int newHeight = // result of combining
@@ -499,11 +499,11 @@ int verticallyClose(glyph_t *aGlyph, textLine *aLine, textLine *nextLine) {
 	// fprintf(stderr, "not close enough.  glyph at left,top (%d,%d) "
 	// 	" would make a new height of %d; old height is %d.  Line is at y=[%d,%d]\n",
 	// 	aGlyph->left, aGlyph->top, newHeight, oldHeight, aLine->top, aLine->bottom);
-	return false;	
+	return false;
 } // verticallyClose
 
 lineHeaderList *newLineHeader() {
-	lineHeaderList *answer = 
+	lineHeaderList *answer =
 		(lineHeaderList *) malloc(sizeof(lineHeaderList));
 	answer->line = (textLine *) malloc(sizeof(textLine));
 	answer->line->glyphs = answer->line->end = // dummy at start
@@ -624,7 +624,7 @@ lineHeaderList *combineLinesOld(lineHeaderList *curLine) { // combine with next.
 		nextGlyph = thisGlyph->next;
 		thisGlyph->next = NULL;
 		glyph_t *curGlyphPtr;
-		for (curGlyphPtr = curLine->line->glyphs; curGlyphPtr->next; 
+		for (curGlyphPtr = curLine->line->glyphs; curGlyphPtr->next;
 				curGlyphPtr = curGlyphPtr->next) { // each glyph on line
 			// starting with the dummy at head of line!
 			if (thisGlyph->right < curGlyphPtr->next->left) {
@@ -696,7 +696,7 @@ void copyGlyph(glyph_t *glyphPtr, lineHeaderList *theLineList) {
 		textLine *tryLine = curLineHeader->next->line;
 		glyph_t *prevGlyph = tryLine->end;
 		// int xdistance = abs(newGlyph->left - prevGlyph->right);
-		int ydistance = 
+		int ydistance =
 			MIN(abs(newGlyph->top - prevGlyph->top),
 				abs(newGlyph->bottom - prevGlyph->bottom));
 		// if (xdistance > glyphWidth * 10) continue;
@@ -937,7 +937,7 @@ int findLines(int column) { // returns Boolean for success
 	for (curLine = lineHeaders->next; curLine; curLine = curLine->next) {
 		numLines += 1;
 	}
-	fprintf(stderr, "There are %d lines in column %d\n", numLines, column);
+	// fprintf(stderr, "There are %d lines in column %d\n", numLines, column);
 	int numGlyphs = 0;
 	int lineNumber = 0;
 	int totalWidth = 0;
@@ -950,7 +950,7 @@ int findLines(int column) { // returns Boolean for success
 			// lineHeaderList *orig = thisLine;
 			// lineHeaderList *next = thisLine->next;
 			// fprintf(stderr, "joining line %d, y=[%d,%d] with next, top %d\n",
-			// 	lineNumber, thisLine->line->top, 
+			// 	lineNumber, thisLine->line->top,
 			// 	thisLine->line->bottom,
 			// 	thisLine->next->line->top);
 			// showGlyphs(thisLine->line, "first line before joining");
@@ -965,9 +965,9 @@ int findLines(int column) { // returns Boolean for success
 				// showGlyphs(thisLine->line, "second of two lines");
 			} else {
 				// fprintf(stderr, "\treturned new line\n");
-			}	
+			}
 			// fprintf(stderr, "\twe now have %d lines\n", numLines);
-		} // while overlapVertical 
+		} // while overlapVertical
 		// compute avgHeight so we can split tall lines later
 		if (thisLine->next) {
 			// fprintf(stderr,
@@ -1059,13 +1059,13 @@ int findLines(int column) { // returns Boolean for success
 int scanAbout(int row, int left, int right) {
 	int top, bottom;
 	int limit = row - averageLineHeight;
-	for (top = row; top > limit; top -= 1) { 
+	for (top = row; top > limit; top -= 1) {
 		if (isBlankRow(top, left, right)) break;
-	} 
+	}
 	limit = row + averageLineHeight;
-	for (bottom = row; bottom < limit; bottom += 1) { 
+	for (bottom = row; bottom < limit; bottom += 1) {
 		if (isBlankRow(bottom, left, right)) break;
-	} 
+	}
 	if (bottom - row < row - top) return(bottom); // going down is closer
 	if (bottom - row > row - top) return(top); // going up is closer
 	if (bottom == limit) return(row); // no luck up or down
@@ -1078,7 +1078,7 @@ glyph_t *glyphAtX(textLine *theLine, int row, int col, int verbose) {
 			theGlyph = theGlyph->next) {
 		// fprintf(stdout, "char ");
 		// fprintf(stderr, "a glyph at %d-%d\n", theGlyph->left, theGlyph->right);
-		if (theGlyph->left <= col && col < theGlyph->right && 
+		if (theGlyph->left <= col && col < theGlyph->right &&
 				theGlyph->top <= row && row < theGlyph->bottom) {
 			return(theGlyph);
 		}
@@ -1237,7 +1237,7 @@ void splitWideGlyphs() {
 				//	splittable);
 				glyph_t *first, *second;
 				int *splitPath;
-				if (!useFlood) { // not flooding; try path split 
+				if (!useFlood) { // not flooding; try path split
 					first = (glyph_t *) calloc(1, sizeof(glyph_t));
 					splitPath = tryPathSeparation(glyphPtr);
 					if (splitPath) { // try path split
@@ -1297,7 +1297,7 @@ void splitWideGlyphs() {
 					freeGlyph(first); // easier than just freeing parts
 					freeGlyph(second);
 				} // each splitpoint
-				if (firstOCR2 < minMatch2) { // looks like success 
+				if (firstOCR2 < minMatch2) { // looks like success
 					// fprintf(stderr,
 					// 	"vertical splitting [%d,%d] at %d; %f < %f\n",
 					// 	glyphPtr->left, glyphPtr->top,
@@ -1323,7 +1323,7 @@ void splitWideGlyphs() {
 					continue; // go on to next glyph
 				} // success at vertical split
 				// try slanted split
-				splitPath = buildSlantedPath(glyphPtr, 
+				splitPath = buildSlantedPath(glyphPtr,
 					glyphPtr->left + HEIGHT(glyphPtr)/slant +
 					minGlyphWidth);
 				// fprintf(stderr, "point 1: glyph [%d,%d]\n",
@@ -1378,7 +1378,7 @@ void splitWideGlyphs() {
 							glyphPtr->left, glyphPtr->top);
 				}
 			} // might want to split
-		} // each glyph on the line	
+		} // each glyph on the line
 	} // each line
 } // splitWideGlyphs
 
@@ -1394,7 +1394,7 @@ int *adjustPath(int *oldPath, int oldHeight, int stretchAbove,
 		int stretchBelow) {
 	// The oldPath was for a glyph that has been vertically extended, so the
 	// new path must be longer.  We simply extend the first/last elements of
-	// oldPath into a newly allocated array.  We do not deallocate oldPath.  
+	// oldPath into a newly allocated array.  We do not deallocate oldPath.
 	int *newPath = (int *)
 		malloc((oldHeight + stretchAbove + stretchBelow)*sizeof(int));
 	memcpy(newPath+stretchAbove, oldPath, oldHeight*sizeof(int));
@@ -1468,7 +1468,7 @@ void narrowGlyphs() {
 					}
 				} // don't combine two
 			} // consider combining
-		} // each glyph on the line	
+		} // each glyph on the line
 	} // each line
 } // narrowGlyphs
 
@@ -1599,7 +1599,7 @@ int *tryPathSeparation(glyph_t *glyphPtr) {
 			break;
 		} // still working
 		if (yIndex != glyphPtr->bottom-1) continue; // stopped before finishing
-		// fprintf(stderr, "found first path for [%d,%d]; overall slant %3.2f\n", 
+		// fprintf(stderr, "found first path for [%d,%d]; overall slant %3.2f\n",
 		// 	glyphPtr->left, top,
 		// 	(glyphPtr->bottom - top + 0.0) / (xIndex - xStartIndex));
 		return(positions);
@@ -1636,7 +1636,7 @@ int *tryPathSeparation(glyph_t *glyphPtr) {
 			break;
 		} // still working
 		if (yIndex != glyphPtr->bottom-1) continue; // stopped before finishing
-		// fprintf(stderr, "found second path for [%d,%d]; overall slant %3.2f\n", 
+		// fprintf(stderr, "found second path for [%d,%d]; overall slant %3.2f\n",
 		// 	glyphPtr->left, top,
 		// 	(glyphPtr->bottom - top + 0.0) / (xIndex - xStartIndex));
 		return(positions);
@@ -1761,7 +1761,7 @@ void finishPathSplit(glyph_t *glyphPtr, glyph_t *first, int *splitPath) {
 } // finishPathSplit
 
 // the following is under development.  It uses a flooding algorithm to find
-// glyphs. 
+// glyphs.
 
 #define MARK(row, col) do {image[AT(row,col)] = 2;} while(0)
 #define UNMARK(row, col) do {image[AT(row,col)] = 1;} while(0)
@@ -1769,7 +1769,7 @@ void finishPathSplit(glyph_t *glyphPtr, glyph_t *first, int *splitPath) {
 #define ISBLACK(row, col) (image[AT(row,col)] == 1)
 
 void floodRecur(glyph_t *theGlyph, int row, int col, int topRow) {
-	if (row < 0 || row >= height 
+	if (row < 0 || row >= height
 			|| col < leftBorder || col >= rightBorder) {
 		return; // out of range
 	}

@@ -13,8 +13,8 @@ DOWNLEFT	segment.c	1518;"	d	file:
 DOWNLEFTLEFT	segment.c	1536;"	d	file:
 DOWNRIGHT	segment.c	1527;"	d	file:
 DOWNRIGHTRIGHT	segment.c	1548;"	d	file:
-FRIBIDI_MASK_NEUTRAL	dl.c	509;"	d	file:
-FRIBIDI_MASK_RTL	dl.c	508;"	d	file:
+FRIBIDI_MASK_NEUTRAL	dl.c	533;"	d	file:
+FRIBIDI_MASK_RTL	dl.c	532;"	d	file:
 GOODHEIGHT	ocr.h	55;"	d
 GOODMATCH	ocr.h	63;"	d
 GOODWIDTH	ocr.h	49;"	d
@@ -78,7 +78,7 @@ buildSlantedPath	segment.c	/^int *buildSlantedPath(glyph_t *glyph, int xStartInd
 buildTreeFromData	dl.c	/^static kd_node_t *buildTreeFromData(tuple_t *key, const char **values,$/;"	f	file:
 buildTuples	categorize.c	/^void buildTuples() {$/;"	f
 calculateDistance	categorize.c	/^void calculateDistance(glyph_t *glyphPtr) {$/;"	f
-callModuleFunc	dl.c	/^char* callModuleFunc(char * filename, char * function, char * args[]) {$/;"	f
+callPythonFunc	dl.c	/^char* callPythonFunc(char* filename, char* function, tuple_t args) {$/;"	f
 categorization	dl.c	/^kd_node_t *categorization; \/\/ the root$/;"	v
 closestMatch	dl.c	/^float closestMatch(kd_node_t *tree, tuple_t probe, bucket_t **bucket,$/;"	f
 collectText	gtkDisplay.c	/^static int collectText(glyph_t *glyphPtr, char *buffer, int lengthAvailable) {$/;"	f	file:
@@ -225,7 +225,6 @@ readTuples	dl.c	/^void readTuples() {$/;"	f
 redStyle	gtkDisplay.c	/^GtkStyle *redStyle, *greenStyle, *blueStyle, *yellowStyle;$/;"	v
 redo	gtkDisplay.c	/^int redo;$/;"	v
 redoColumn	gtkDisplay.c	/^void redoColumn() {$/;"	f
-ree	dl.c	/^char* ree() {$/;"	f
 refillLine	segment.c	/^void refillLine(lineHeaderList *aLineHeader) {$/;"	f
 refillTuple	categorize.c	/^void refillTuple(glyph_t *glyph, tuple_t tuple) {$/;"	f
 right	ocr.h	/^	int right; \/\/ column following the right of the glyph$/;"	m	struct:glyph_s
@@ -252,7 +251,7 @@ splitLine	segment.c	/^void splitLine(lineHeaderList *curLineHeader) {$/;"	f
 splitTop	ocr.h	/^	int splitTop, splitBottom; \/\/ boolean: artificially split at top or bottom$/;"	m	struct:__anon1
 splitWideGlyphs	segment.c	/^void splitWideGlyphs() {$/;"	f
 splittable	main.c	/^float splittable = SPLITTABLE;$/;"	v
-swap	dl.c	242;"	d	file:
+swap	dl.c	266;"	d	file:
 templateData	template.c	/^char *templateData[MAXTEMPLATES];$/;"	v
 templateDataCount	template.c	/^int templateDataCount;$/;"	v
 textBuffer	gtkDisplay.c	/^GtkTextBuffer *textBuffer;$/;"	v

@@ -1,7 +1,7 @@
 /*
 main.c
 
-Copyright © Raphael Finkel 2007-2010 raphael@cs.uky.edu  
+Copyright © Raphael Finkel 2007-2010 raphael@cs.uky.edu
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ fprintf(stderr,
 	"Usage: ocr -f fontData [-t] [-h n] [-w n] [-s n] [-W n] [-H n] [image ...] \n"
 	"\timage, image.tif, or image.tiff is the image file\n"
 	"\timage.training is its training file.\n"
-	"\tfontData associates glyph statistics with UTF8 strings.\n" 
+	"\tfontData associates glyph statistics with UTF8 strings.\n"
 	"\t-c n for n-column input.\n"
 	"\t-t causes text output; it does not have an interactive component.\n"
 	"\t-h n only considers glyphs at least n pixels tall (default %d)\n"
@@ -134,7 +134,7 @@ while (1) { // each option
 			if (optarg)
 				fprintf(stdout, "\twith argument %s\n", optarg);
 			break;
-		case 'f': 
+		case 'f':
 			fontFile = optarg; break;
 		case 't':
 			textOnly = true; break;
@@ -176,7 +176,7 @@ while (1) { // each option
 			fprintf(stderr, "Using %f for slant\n", slant);
 			break;
 		case 'x':
-			fprintf(stderr, "flooding to identify glyphs\n");
+			// fprintf(stderr, "flooding to identify glyphs\n");
 			useFlood = true;
 			break;
 		case 'X':
@@ -189,13 +189,13 @@ while (1) { // each option
 			break;
 		case 'd':
 			minGlyphArea = atoi(optarg);
-			fprintf(stderr, "Minimum acceptable area %d\n", minGlyphArea);
+			// fprintf(stderr, "Minimum acceptable area %d\n", minGlyphArea);
 			break;
 		case '?':
 			fprintf(stdout, "unrecognized option\n");
 			usage();
 			break;
-		
+
 	} // switch
 } // each option
 if (fontFile == NULL) {
@@ -205,11 +205,11 @@ readTuples();
 while (optind < argc) { // each TIFF file
 	fileBase = argv[optind++];
 	char *dotPos = rindex(fileBase, '.');
-	if (dotPos) *dotPos = 0; // remove extension 
+	if (dotPos) *dotPos = 0; // remove extension
 	do {
 		// printf("reading picture\n");
-		fprintf(stdout, "%s\n", fileBase);
-		fprintf(stderr, "%s\n", fileBase);
+		// fprintf(stdout, "%s\n", fileBase);
+		// fprintf(stderr, "%s\n", fileBase);
 		readPicture();
 		if (!noShear) shearPicture();
 		// p_init();

@@ -26,30 +26,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 kd_node_t *categorization; // the root
 int RTL;
 
-char* callModuleFunc(char * filename, char * function, char * args[]) {
+char* callPythonFunc(char* filename, char* function, tuple_t args) {
   Py_Initialize();
+  // Confirm that the Python interpreter is looking at this folder path
   PyObject *sysmodule = PyImport_ImportModule("sys");
   PyObject *syspath = PyObject_GetAttrString(sysmodule, "path");
   PyList_Append(syspath, PyString_FromString("."));
   Py_DECREF(syspath);
   Py_DECREF(sysmodule);
 
+  // Get references to the "filename" Python file and
+  // "function" inside of said file.
   PyObject *mymodule = PyImport_ImportModule(filename);
   assert(mymodule != NULL);
   PyObject *myfunc = PyObject_GetAttrString(mymodule, function);
   assert(myfunc != NULL);
-  PyObject *result = PyObject_CallObject(myfunc, NULL);
+
+  // Convert tuple into a Python list
+  // fprintf(stdout, "before allocate\n");
+  PyObject *arglist = PyList_New((Py_ssize_t) TUPLELENGTH);
+  int dimension;
+  // fprintf(stdout, "before build\n");
+  for (dimension = 0; dimension < TUPLELENGTH; dimension += 1) {
+    // fprintf(stdout, "inside build %d\n", dimension);
+    // printf("%f\n", args[dimension]);
+    PyObject *element = Py_BuildValue("f", args[dimension]);
+    int ret = PyList_Append(arglist, element);
+    assert(ret == 0);
+  }
+  // fprintf(stdout, "after build\n");
+
+  PyObject *maxLength = Py_BuildValue("i", TUPLELENGTH);
+  // Call the Python function using the arglist and get its result
+  PyObject *result = PyObject_CallFunctionObjArgs(myfunc, arglist,
+    maxLength, NULL);
   assert(result != NULL);
   char* retval = (char*) PyString_AsString(result);
   Py_DECREF(result);
+  Py_DECREF(arglist);
   Py_DECREF(myfunc);
   Py_DECREF(mymodule);
-  return retval;
-}
-
-char* ree() {
-  char* retval = (char*) callModuleFunc("dl", "main", "");
-  // fprintf(stdout, "%s", retval);
   return retval;
 }
 
@@ -204,7 +220,8 @@ float ocrDistance2(tuple_t tuple) { // returns square of distance
 } // ocrDistance
 
 const char *ocrValue(tuple_t tuple) {
-  return ree();
+  char* retval = (char*) callPythonFunc("dl", "main", tuple);
+  return retval;
 } // ocrValue
 
 int maxSpreadDimension(tuple_t *key, int count) {
