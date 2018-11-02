@@ -53,6 +53,7 @@ char* callPythonFunc(char* filename, char* function, tuple_t args) {
     PyObject *element = Py_BuildValue("f", args[dimension]);
     int ret = PyList_Append(arglist, element);
     assert(ret == 0);
+    Py_DECREF(element);
   }
   // fprintf(stdout, "after build\n");
 
@@ -63,6 +64,7 @@ char* callPythonFunc(char* filename, char* function, tuple_t args) {
   assert(result != NULL);
   char* retval = (char*) PyString_AsString(result);
   Py_DECREF(result);
+  Py_DECREF(maxLength);
   Py_DECREF(arglist);
   Py_DECREF(myfunc);
   Py_DECREF(mymodule);
@@ -220,7 +222,7 @@ float ocrDistance2(tuple_t tuple) { // returns square of distance
 } // ocrDistance
 
 const char *ocrValue(tuple_t tuple) {
-  char* retval = (char*) callPythonFunc("dl", "main", tuple);
+  char* retval = (char*) callPythonFunc("dl", "ocrValue", tuple);
   return retval;
 } // ocrValue
 
