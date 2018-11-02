@@ -41,7 +41,7 @@ tags: *.c *.h
 clean:
 	rm -f $(GOAL) $(OBJS)
 
-IMPORTANT = ocr/*.c ocr/*.h ocr/demo ocr/fontData/yiddishData \
+IMPORTANT = ocr/*.c ocr/*.h ocr/demo ocr/../fontData/yiddishData \
 	ocr/README ocr/Makefile ocr/COPYRIGHT ocr/fixutf8.pl
 
 DOWNLOAD = *.c *.h demo fontData README Makefile COPYRIGHT fridibi fixutf8.pl
@@ -98,18 +98,18 @@ rotate:
 
 BASHEVIS = -H 600 -W 600 -d 30 -w 3 -h 5 -x -i -p 1.4 -s 0.4 -A -m 1.1
 bashevis-i:
-	$(OCR) -f fontData/bashevis.data $(BASHEVIS) \
+	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) \
 	tmp/bashevis-sotn-in-goray/page*.tif
 
 bashevis-b:
-	$(OCR) -f fontData/bashevis.data $(BASHEVIS) -t \
+	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) -t \
 	tmp/bashevis-sotn-in-goray/page*.tif | \
 		~/links/y/fixutf8.pl | fixSholem.pl | ~/links/y/fixspell.pl > \
 		tmp/bashevis-sotn-in-goray/output.uyid
 
 # d for deep
 bashevis-d:
-	$(OCR) -f fontData/bashevis.data $(BASHEVIS) -t \
+	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) -t \
 	tmp/bashevis-sotn-in-goray/page*.tif
 
 TEST = -H 600 -W 600 -d 15 -w 3 -h 4 -p 1.2 -m 1.0 -x -i
