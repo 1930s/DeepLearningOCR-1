@@ -32,8 +32,8 @@ $(GOAL): $(OBJS) tags
 $(OBJS): ocr.h
 
 sample-i:
-	$(GOAL) -f fontData/english.data $(BASHEVIS) \
-	samples/lorem01.tif
+	$(GOAL) -f ../fontData/english.data $(BASHEVIS) \
+	../samples/lorem01.tif
 
 tags: *.c *.h
 	ctags *.c *.h
@@ -61,7 +61,7 @@ interactive: ocr
 
 # a sample to show how to do it
 batch: ocr
-	./ocr -f fontData/yiddishData -t demo/nybc200960_0100 | perl fixutf8.pl
+	./ocr -f ../fontData/yiddishData -t demo/nybc200960_0100 | perl fixutf8.pl
 
 burstPDF:
 	pdftk $(PDF) burst
@@ -105,7 +105,7 @@ bashevis-b:
 	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) -t \
 	../tmp/bashevis-sotn-in-goray/page*.tif | \
 		~/links/y/fixutf8.pl | fixSholem.pl | ~/links/y/fixspell.pl > \
-		tmp/bashevis-sotn-in-goray/output.uyid
+		../tmp/bashevis-sotn-in-goray/output.uyid
 
 # d for deep
 bashevis-d:
