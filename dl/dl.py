@@ -23,20 +23,19 @@ learning_rate = 0.01
 x = tf.placeholder('float', [None, 27])
 y = tf.placeholder('float')
 
+hidden_1_layer = {'weights': tf.Variable(tf.random_normal([27, n_neurons_in_h1])),
+                  'biases': tf.Variable(tf.random_normal([n_neurons_in_h1]))}
+
+hidden_2_layer = {'weights': tf.Variable(tf.random_normal([n_neurons_in_h1, n_neurons_in_h2])),
+                  'biases': tf.Variable(tf.random_normal([n_neurons_in_h2]))}
+
+hidden_3_layer = {'weights': tf.Variable(tf.random_normal([n_neurons_in_h2, n_neurons_in_h3])),
+                  'biases': tf.Variable(tf.random_normal([n_neurons_in_h3]))}
+
+output_layer = {'weights': tf.Variable(tf.random_normal([n_neurons_in_h3, n_classes])),
+                'biases': tf.Variable(tf.random_normal([n_classes]))}
+
 def neural_network_model(data):
-
-    hidden_1_layer = {'weights': tf.Variable(tf.random_normal([27, n_neurons_in_h1])),
-                      'biases': tf.Variable(tf.random_normal([n_neurons_in_h1]))}
-
-    hidden_2_layer = {'weights': tf.Variable(tf.random_normal([n_neurons_in_h1, n_neurons_in_h2])),
-                      'biases': tf.Variable(tf.random_normal([n_neurons_in_h2]))}
-
-    hidden_3_layer = {'weights': tf.Variable(tf.random_normal([n_neurons_in_h2, n_neurons_in_h3])),
-                      'biases': tf.Variable(tf.random_normal([n_neurons_in_h3]))}
-
-    output_layer = {'weights': tf.Variable(tf.random_normal([n_neurons_in_h3, n_classes])),
-                    'biases': tf.Variable(tf.random_normal([n_classes]))}
-
     # (input_data * weights) + biases
 
     l1 = tf.add(tf.matmul(data, hidden_1_layer['weights']), hidden_1_layer['biases'])
@@ -50,33 +49,38 @@ def neural_network_model(data):
 
     output = tf.matmul(l3, output_layer['weights']) + output_layer['biases']
 
-    return output
+    print(output)
+    return "b"
 
 def train_neural_network(x):
+    print("train start")
     prediction = neural_network_model(x)
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(prediction,y))
+    print("prediction worked")
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=prediction, logits=y))
+    print("cost worked")
     optimizer = tf.train.AdamOptimizer().minimize(cost)
+    print("setup end")
 
     training_epochs = 10
 
-    with tf.Session() as sess
+    print("before with")
+    with tf.Session() as sess:
+        print("before run")
         sess.run(tf.initialize_all_variables())
 
         for epoch in training_epochs:
+            print("epoch num:", epoch)
             epoch_loss = 0
-            for _ in range(int(57/batch_size))
-                epoch_x, epoch_y = next_batch(epoch, batch_size)
-                _, c = ses.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
-                epoch_loss += class
+            for _ in range(int(57/batch_size)):
+                epoch_x, epoch_y = next_batch(batch_size)
+                _, c = sess.run([optimizer, cost], feed_dict={x: epoch_x, y: epoch_y})
+                epoch_loss += c
             print('Epoch', epoch, 'completed out of', training_epochs, 'loss:',epoch_loss)
 
         correct = tf.equal(tf.argmax(prediction,1), tf.argmax(y,1))
 
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        print('Accuracy',accuracy.eval({x:ocr.test.images, y:ocr.test.labels}))
-
-train_neural_network(x)
-#end tensorflow stuff
+        print('Accuracy',accuracy.eval({x:font, y:expected}))
 
 # Import pre-trained font data
 def load_font(filename):
@@ -92,13 +96,18 @@ def load_font(filename):
     data = tf.convert_to_tensor(trained_font)
     return data, expected
 
-
 # Pre-trained English font data and expected characters with matching array indices
 font, expected = load_font(path.abspath(path.join(__file__, "../../fontData/english.data")))
 # print font
 
-def next_batch(epoch, batch_size):
-    font
+train_neural_network(x)
+#end tensorflow stuff
+
+def next_batch(batch_size):
+    indices = [np.random_integers(0, 57) for count in range(batch_size)]
+    ret_batch = [font[index] for index in indices]
+    ret_expected = [expected[index] for index in indices]
+    return ret_batch, ret_expected
 
 def ocrValue(tuple_in, max_length):
     # For some reason, the list comes is as length 54 but with only 27 elements
@@ -107,5 +116,6 @@ def ocrValue(tuple_in, max_length):
     for dimension in range(max_length, len(tuple_in)):
         temp.append(tuple_in[dimension])
     # print "Length:", len(tuple), "\t data:", tuple
-    tuple = tf.convert_to_tensor(temp)
-    return "a"
+    tuple = tf.constant(temp, shape=[1, n_features])
+    # return neural_network_model(tuple)
+    return neural_network_model(tuple)
