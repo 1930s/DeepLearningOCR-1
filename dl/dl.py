@@ -26,7 +26,7 @@ def neural_network_model(data):
     # (input_data * weights) + biases
     # data = tf.constant(data, shape=[1, 27])
 
-    global l_1, a_1, l_2, a_2, l_3, a_3, diff
+    global l_1, a_1, l_2, a_2, l_3, a_3, a_4
     l_1 = tf.add(tf.matmul(data, hidden_1_layer['weights']), hidden_1_layer['biases'])
     a_1 = tf.nn.sigmoid(l_1)
 
@@ -39,12 +39,10 @@ def neural_network_model(data):
     output = tf.matmul(a_3, output_layer['weights']) + output_layer['biases']
     a_4 = tf.nn.sigmoid(output)
 
-    diff = tf.subtract(a_4, y)
-
     sess = tf.Session()
-    result = sess.run(a_4)
-    print(uniques[result.tolist()[0].index(max(result.tolist()[0]))])
-    return uniques[result.tolist()[0].index(max(result.tolist()[0]))]
+    result = sess.run(a_4).tolist()[0]
+    print(uniques[result.index(max(result))])
+    return uniques[result.index(max(result))]
 
 
 # Return the derivative of the sigmoid function
@@ -52,8 +50,14 @@ def sigmoid_prime(data):
     return tf.multiply(tf.sigmoid(data), tf.subtract(tf.constant(1.0), tf.sigmoid(data)))
 
 
+# Using a 2-D 1-hot matrix, compare how different the output matrix is
+# def my_loss_function(output, expected_index):
+
+
 # Back propagation
 def back_prop():
+    global diff
+    diff = tf.subtract(a_4, y)
     # Start from end, work to beginning
     d_z_3 = tf.multiply(diff, sigmoid_prime(l_3))
     d_bias_3 = d_z_3
@@ -72,7 +76,7 @@ def back_prop():
     # Begin updating the network
     eta = tf.constant(0.5)
 
-    global step
+    # Deltas that the weights and biases will change by
     step = [
         tf.assign(hidden_1_layer['weights'],
                   tf.subtract(hidden_1_layer['weights'], tf.multiply(eta, d_weight_1))),
@@ -90,6 +94,8 @@ def back_prop():
                   tf.subtract(hidden_3_layer['biases'], tf.multiply(eta, tf.reduce_mean(d_bias_3, axis=[0])))),
     ]
 
+    return step
+
 
 # Given the size of each batch, return a random selection from the training data
 def next_batch(batch_size):
@@ -100,18 +106,16 @@ def next_batch(batch_size):
 
 
 # Train the neural network based on existing trained font data
-def train_neural_network(x):
+def train_neural_network(font_data, expeted_chars):
     print("train start")
-    prediction = neural_network_model(x)
-    print("prediction worked")
 
     training_epochs = 10
 
-    acct_mat = tf.equal(tf.argmax(a_3, 1), tf.argmax(y, 1))
-    acct_res = tf.reduce_sum(tf.cast(acct_mat, tf.float32))
+    # acct_mat = tf.equal(tf.argmax(a_3, 1), tf.argmax(y, 1))
+    # acct_res = tf.reduce_sum(tf.cast(acct_mat, tf.float32))
 
     print("before with")
-    with tf.InteractiveSession() as sess:
+    with tf.Session() as sess:
         print("before run")
         # sess.run(tf.initialize_all_variables())
         sess.run(tf.global_variables_initializer())
@@ -119,9 +123,14 @@ def train_neural_network(x):
         for epoch in range(training_epochs):
             for _ in range(int(len(expected) / batch_size)):
                 epoch_x, epoch_y = next_batch(batch_size)
+
+                # prediction = neural_network_model(x)
+                # print("prediction worked")
+
+                step = back_prop()
                 sess.run(step, feed_dict={a_0: epoch_x, y: epoch_y})
 
-        correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
+        correct = tf.equal(tf.argmax(a_0, 1), tf.argmax(y, 1))
 
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
         print('Accuracy', accuracy.eval({a_0: font, y: expected}))
@@ -161,7 +170,7 @@ def ocrValue(tuple_in, max_length):
 # Pre-trained English font data and expected characters with matching array indices
 font, expected = load_font(path.abspath(path.join(__file__, "../../fontData/english.data")))
 uniques = list(set(expected))
-print(len(uniques))
+# print(len(uniques))
 n_classes = len(uniques)
 
 diff = tf.placeholder('float', [None, n_classes])
@@ -182,7 +191,11 @@ hidden_3_layer = {'weights': tf.Variable(tf.random_normal([n_neurons_in_h2, n_ne
 output_layer = {'weights': tf.Variable(tf.random_normal([n_neurons_in_h3, n_classes])).initialized_value(),
                 'biases': tf.Variable(tf.random_normal([n_classes])).initialized_value()}
 
-# train_neural_network(a_0)
+# Before training
+print(neural_network_model(tf.constant(font[0], shape=[1, 27])))
+
+train_neural_network(font, expected)
 # end tensorflow stuff
 
-print(neural_network_model(tf.constant(font[0], shape=[27, 1])))
+# After training
+print(neural_network_model(tf.constant(font[0], shape=[1, 27])))
