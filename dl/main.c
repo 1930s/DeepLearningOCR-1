@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <getopt.h>
+#include <stdio.h>
 #include "ocr.h"
 
 // variables
@@ -40,10 +41,12 @@ int useFlood = 0;
 int mayCombine = 1;
 int alwaysCombine = false;
 int minGlyphArea = 1;
+const char *bookName = 0; // file name of book models
+PyObject *modelJson; // Contents of the model.json file
 
 static void usage() {
 fprintf(stderr,
-	"Usage: ocr -f fontData [-t] [-h n] [-w n] [-s n] [-W n] [-H n] [image ...] \n"
+	"Usage: ocr -f fontData -b bookName [-t] [-h n] [-w n] [-s n] [-W n] [-H n] [image ...] \n"
 	"\timage, image.tif, or image.tiff is the image file\n"
 	"\timage.training is its training file.\n"
 	"\tfontData associates glyph statistics with UTF8 strings.\n"
@@ -69,7 +72,8 @@ fprintf(stderr,
 	"\t-X do not try to combine or split.\n"
 	"\t-A always combine horizontal overlaps, even if result is worse.\n"
 	"\t-i ignore glyph's vertical placement in matching glyphs\n"
-	"\t-d n minimum glyph area\n",
+	"\t-d n minimum glyph area\n"
+	"\t-b bookName of book fontData and Deep Learning model\n",
 		MINGLYPHHEIGHT, MINGLYPHWIDTH, MAXGLYPHHEIGHT, MAXGLYPHWIDTH, MINMATCH,
 		GOODMATCH, SPLITTABLE, SPACEFRACTION, CUTOFF, SLANT
 	);
@@ -79,19 +83,19 @@ exit(1);
 extern int fribidi_get_type_internal(int character);
 
 void simpleTest() {
-fprintf(stdout, "type of %d is 0%x\n", 0x05dc,
-	fribidi_get_type_internal(0x05dc));
-fprintf(stdout, "type of %d is 0%x\n", 0x0066,
-	fribidi_get_type_internal(0x0066));
-fprintf(stdout, "type of %d is 0%x\n", 0x0028,
-	fribidi_get_type_internal(0x0028));
-return;
-// readTree(); // get training data
-bucket_t *bucket;
-int index;
-glyph_t *glyph = lineHeaders->next->line->glyphs;
-for (index = 0; index < 8; index += 1) {
-	glyph = glyph->next;
+    fprintf(stdout, "type of %d is 0%x\n", 0x05dc,
+        fribidi_get_type_internal(0x05dc));
+    fprintf(stdout, "type of %d is 0%x\n", 0x0066,
+        fribidi_get_type_internal(0x0066));
+    fprintf(stdout, "type of %d is 0%x\n", 0x0028,
+        fribidi_get_type_internal(0x0028));
+    return;
+    // readTree(); // get training data
+    bucket_t *bucket;
+    int index;
+    glyph_t *glyph = lineHeaders->next->line->glyphs;
+    for (index = 0; index < 8; index += 1) {
+        glyph = glyph->next;
 }
 tuple_t tuple = glyph->tuple;
 float dist = closestMatch(categorization, tuple, &bucket,
@@ -107,159 +111,226 @@ printTree(categorization, -1, "full tree", 0);
 } // simpleTest
 
 int main (int argc, char * const argv[]) {
-fontFile = NULL;
-int textOnly = false;
-setvbuf(stderr, NULL, _IONBF, 0); // stderr comes out immediately
-while (1) { // each option
-	static struct option longOptions[] = {
-		{"font", required_argument, 0, 0},
-		{"textout", no_argument, 0, 0},
-		{"minHeight", required_argument, 0, 0},
-		{"minWidth", required_argument, 0, 0},
-		{"spaceFraction", required_argument, 0, 0},
-		{"minMatch", required_argument, 0, 0},
-		{"maxHeight", required_argument, 0, 0},
-		{"maxWidth", required_argument, 0, 0},
-		{"ignoreVertical", no_argument, 0, 0},
-		{0, 0, 0, 0}
-	};
-	int optionIndex;
-	int c = getopt_long(argc, argv, "f:th:w:s:m:H:W:g:p:c:iSL:xC:XAd:",
-		longOptions, &optionIndex);
-	if (c == -1) break; // no more options
-	switch (c) {
-		case 0: // long option
-			fprintf(stdout, "long option %s\n",
-				longOptions[optionIndex].name);
-			if (optarg)
-				fprintf(stdout, "\twith argument %s\n", optarg);
-			break;
-		case 'f':
-			fontFile = optarg; break;
-		case 't':
-			textOnly = true; break;
-		case 'w':
-			minGlyphWidth = atoi(optarg); break;
-		case 'h':
-			minGlyphHeight = atoi(optarg); break;
-		case 'm':
-			minMatch = atof(optarg); break;
-		case 'W':
-			maxGlyphWidth = atoi(optarg); break;
-		case 'H':
-			maxGlyphHeight = atoi(optarg); break;
-		case 's':
-			spaceFraction = atof(optarg); break;
-		case 'g':
-			goodMatch = atof(optarg);
-			goodMatch2 = goodMatch * goodMatch;
-			break;
-		case 'p':
-			splittable = atof(optarg);
-			break;
-		case 'C':
-			cutoff = atof(optarg);
-			fprintf(stderr, "Using darkness cutoff %3.2f\n", cutoff);
-			break;
-		case 'c':
-			columns = atoi(optarg);
-			fprintf(stderr, "Using %d columns\n", columns);
-			break;
-		case 'i':
-			ignoreVertical = true;
-			break;
-		case 'S':
-			noShear = true;
-			break;
-		case 'L':
-			slant = atof(optarg);
-			fprintf(stderr, "Using %f for slant\n", slant);
-			break;
-		case 'x':
-			// fprintf(stderr, "flooding to identify glyphs\n");
-			useFlood = true;
-			break;
-		case 'X':
-			fprintf(stderr, "not combining or splitting\n");
-			mayCombine = false;
-			break;
-		case 'A':
-			fprintf(stderr, "always combining horizontal\n");
-			alwaysCombine = true;
-			break;
-		case 'd':
-			minGlyphArea = atoi(optarg);
-			// fprintf(stderr, "Minimum acceptable area %d\n", minGlyphArea);
-			break;
-		case '?':
-			fprintf(stdout, "unrecognized option\n");
-			usage();
-			break;
+		fontFile = NULL;
+    bookName = NULL;
+    int textOnly = false;
+    setvbuf(stderr, NULL, _IONBF, 0); // stderr comes out immediately
+    while (1) { // each option
+        static struct option longOptions[] = {
+            {"font", required_argument, 0, 0},
+            {"textout", no_argument, 0, 0},
+            {"minHeight", required_argument, 0, 0},
+            {"minWidth", required_argument, 0, 0},
+            {"spaceFraction", required_argument, 0, 0},
+            {"minMatch", required_argument, 0, 0},
+            {"maxHeight", required_argument, 0, 0},
+            {"maxWidth", required_argument, 0, 0},
+            {"ignoreVertical", no_argument, 0, 0},
+            {0, 0, 0, 0}
+        };
+        int optionIndex;
+        int c = getopt_long(argc, argv, "f:th:w:s:m:H:W:g:p:c:iSL:xC:XAd:b:",
+            longOptions, &optionIndex);
+        if (c == -1) break; // no more options
+        switch (c) {
+            case 0: // long option
+                fprintf(stdout, "long option %s\n",
+                    longOptions[optionIndex].name);
+                if (optarg)
+                    fprintf(stdout, "\twith argument %s\n", optarg);
+                break;
+            case 'f':
+                fontFile = optarg; break;
+            case 't':
+                textOnly = true; break;
+            case 'w':
+                minGlyphWidth = atoi(optarg); break;
+            case 'h':
+                minGlyphHeight = atoi(optarg); break;
+            case 'm':
+                minMatch = atof(optarg); break;
+            case 'W':
+                maxGlyphWidth = atoi(optarg); break;
+            case 'H':
+                maxGlyphHeight = atoi(optarg); break;
+            case 's':
+                spaceFraction = atof(optarg); break;
+            case 'g':
+                goodMatch = atof(optarg);
+                goodMatch2 = goodMatch * goodMatch;
+                break;
+            case 'p':
+                splittable = atof(optarg);
+                break;
+            case 'C':
+                cutoff = atof(optarg);
+                fprintf(stderr, "Using darkness cutoff %3.2f\n", cutoff);
+                break;
+            case 'c':
+                columns = atoi(optarg);
+                fprintf(stderr, "Using %d columns\n", columns);
+                break;
+            case 'i':
+                ignoreVertical = true;
+                break;
+            case 'S':
+                noShear = true;
+                break;
+            case 'L':
+                slant = atof(optarg);
+                fprintf(stderr, "Using %f for slant\n", slant);
+                break;
+            case 'x':
+                // fprintf(stderr, "flooding to identify glyphs\n");
+                useFlood = true;
+                break;
+            case 'X':
+                fprintf(stderr, "not combining or splitting\n");
+                mayCombine = false;
+                break;
+            case 'A':
+                fprintf(stderr, "always combining horizontal\n");
+                alwaysCombine = true;
+                break;
+            case 'd':
+                minGlyphArea = atoi(optarg);
+                // fprintf(stderr, "Minimum acceptable area %d\n", minGlyphArea);
+                break;
+            case 'b':
+                bookName = optarg;
+                break;
+            case '?':
+                fprintf(stdout, "unrecognized option\n");
+                usage();
+                break;
 
-	} // switch
-} // each option
-if (fontFile == NULL) {
-	usage();
-}
-readTuples();
-while (optind < argc) { // each TIFF file
-	fileBase = argv[optind++];
-	char *dotPos = rindex(fileBase, '.');
-	if (dotPos) *dotPos = 0; // remove extension
-	do {
-		// printf("reading picture\n");
-		// fprintf(stdout, "%s\n", fileBase);
-		// fprintf(stderr, "%s\n", fileBase);
-		readPicture();
-		if (!noShear) shearPicture();
-		// p_init();
-		// printRaster();
-		int col;
-		int startCol, lastCol, increment;
-		if (RTL) {
-			// fprintf(stderr, "RTL mode\n");
-			startCol = columns-1;
-			lastCol = -1;
-			increment = -1;
-		} else {
-			startCol = 0;
-			lastCol = columns;
-			increment = 1;
+        } // switch
+    } // each option
+    if (fontFile == NULL || bookName == NULL) {
+        usage();
+    }
+
+    // Read the neural network json model and save it as a string
+		FILE *infile;
+		char *buffer;
+		long numbytes;
+
+		infile = fopen("model.json", "r");
+		if (infile == NULL) {
+			fprintf(stderr, "Couldn't load json file");
+			return 1;
 		}
-		for (col = startCol; col != lastCol; col += increment) {
-			again:
-			// fprintf(stderr, "column %d/%d\n", col+1, columns);
-			if (!findLines(col)) continue;
-			// printf("building tuples\n");
-			// mtrace();
-			buildTuples();
-			// printf("wide Glyphs\n");
-			if (mayCombine) splitWideGlyphs();
-			if (mayCombine) {
-				narrowGlyphs(); // combine adjacent narrow glyphs if reasonable
-			}
-			// printGlyphs();
-			// simpleTest();
-			int visual = 0;
-			// printf("displaying\n");
-			if (textOnly) {
-				displayText(NULL, &visual);
-			} else {
-				redo = 0; // unless we learn otherwise.
-				GUI(col);
-				if (redo) {
-					// fprintf(stdout, "redoing\n");
-					freeLines();
-					if (useFlood) unMark();
-					goto again;
-				} else {
-					// fprintf(stdout, "not redoing\n");
-				}
-			} // GUI
-			freeLines();
-			// muntrace();
-		} // each column
-	} while (anotherPage());
-} // each file
-return(0);
+		fseek(infile, 0L, SEEK_END);
+		numbytes = ftell(infile);
+		fseek(infile, 0L, SEEK_SET);
+
+		buffer = (char*) calloc(numbytes, sizeof(char));
+		if (buffer == NULL) {
+			fprintf(stderr, "Json file was empty");
+			return 1;
+		}
+
+		// Contents of the json are now in "buffer"
+		fread(buffer, sizeof(char), numbytes, infile);
+		fclose(infile);
+
+		Py_Initialize();
+	  // Confirm that the Python interpreter is looking at this folder path
+	  PyObject *sysmodule = PyImport_ImportModule("sys");
+	  PyObject *syspath = PyObject_GetAttrString(sysmodule, "path");
+	  PyList_Append(syspath, PyUnicode_FromString("."));
+	  Py_DECREF(syspath);
+	  Py_DECREF(sysmodule);
+
+	  // Get references to the "filename" Python file and
+	  // "function" inside of said file.
+	  PyObject *mymodule = PyImport_ImportModule("load_json");
+	  if (mymodule == NULL) {
+	    PyErr_Print();
+	    exit(1);
+	  }
+	  PyObject *myfunc = PyObject_GetAttrString(mymodule, "load_model");
+	  if (myfunc == NULL) {
+	    PyErr_Print();
+	    exit(1);
+	  }
+
+	  PyObject *modelJsonString = Py_BuildValue("s", buffer);
+	  PyObject *dataName = Py_BuildValue("s", bookName);
+	  // Call the Python function using the arglist and get its result
+	  PyObject *result = PyObject_CallFunctionObjArgs(myfunc, modelJsonString,
+			dataName, NULL);
+	  if (result == NULL) {
+	    PyErr_Print();
+	    exit(1);
+	  }
+		modelJson = result;
+		Py_DECREF(modelJsonString);
+	  Py_DECREF(myfunc);
+	  Py_DECREF(mymodule);
+
+
+    readTuples();
+    while (optind < argc) { // each TIFF file
+        fileBase = argv[optind++];
+        char *dotPos = rindex(fileBase, '.');
+        if (dotPos) *dotPos = 0; // remove extension
+        do {
+            // printf("reading picture\n");
+            // fprintf(stdout, "%s\n", fileBase);
+            // fprintf(stderr, "%s\n", fileBase);
+            readPicture();
+            if (!noShear) shearPicture();
+            // p_init();
+            // printRaster();
+            int col;
+            int startCol, lastCol, increment;
+            if (RTL) {
+                // fprintf(stderr, "RTL mode\n");
+                startCol = columns-1;
+                lastCol = -1;
+                increment = -1;
+            } else {
+                startCol = 0;
+                lastCol = columns;
+                increment = 1;
+            }
+            for (col = startCol; col != lastCol; col += increment) {
+                again:
+                // fprintf(stderr, "column %d/%d\n", col+1, columns);
+                if (!findLines(col)) continue;
+                // printf("building tuples\n");
+                // mtrace();
+                buildTuples();
+                // printf("wide Glyphs\n");
+                if (mayCombine) splitWideGlyphs();
+                if (mayCombine) {
+                    narrowGlyphs(); // combine adjacent narrow glyphs if reasonable
+                }
+                // printGlyphs();
+                // simpleTest();
+                int visual = 0;
+                // printf("displaying\n");
+                if (textOnly) {
+                    displayText(NULL, &visual);
+                } else {
+                    redo = 0; // unless we learn otherwise.
+                    GUI(col);
+                    if (redo) {
+                        // fprintf(stdout, "redoing\n");
+                        freeLines();
+                        if (useFlood) unMark();
+                        goto again;
+                    } else {
+                        // fprintf(stdout, "not redoing\n");
+                    }
+                } // GUI
+                freeLines();
+                // muntrace();
+            } // each column
+        } while (anotherPage());
+    } // each file
+
+		free(modelJson);
+    return(0);
 } // main

@@ -4,58 +4,58 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-AT	ocr.h	37;"	d
-BIGDIST	ocr.h	57;"	d
-BUCKETSIZE	ocr.h	47;"	d
-CUTOFF	ocr.h	69;"	d
+AT	ocr.h	38;"	d
+BIGDIST	ocr.h	58;"	d
+BUCKETSIZE	ocr.h	48;"	d
+CUTOFF	ocr.h	70;"	d
 DOWN	segment.c	1512;"	d	file:
 DOWNLEFT	segment.c	1518;"	d	file:
 DOWNLEFTLEFT	segment.c	1536;"	d	file:
 DOWNRIGHT	segment.c	1527;"	d	file:
 DOWNRIGHTRIGHT	segment.c	1548;"	d	file:
-FRIBIDI_MASK_NEUTRAL	dl.c	528;"	d	file:
-FRIBIDI_MASK_RTL	dl.c	527;"	d	file:
-GOODHEIGHT	ocr.h	55;"	d
-GOODMATCH	ocr.h	63;"	d
-GOODWIDTH	ocr.h	49;"	d
-GRID	ocr.h	45;"	d
+FRIBIDI_MASK_NEUTRAL	dl.c	539;"	d	file:
+FRIBIDI_MASK_RTL	dl.c	538;"	d	file:
+GOODHEIGHT	ocr.h	56;"	d
+GOODMATCH	ocr.h	64;"	d
+GOODWIDTH	ocr.h	50;"	d
+GRID	ocr.h	46;"	d
 GUI	gtkDisplay.c	/^void GUI(int col) {$/;"	f
 HEIGHT	segment.c	44;"	d	file:
-INFTY	ocr.h	44;"	d
+INFTY	ocr.h	45;"	d
 ISBLACK	segment.c	1769;"	d	file:
 ISBLANK	segment.c	42;"	d	file:
 ISFILLED	segment.c	43;"	d	file:
 ISMARKED	segment.c	1768;"	d	file:
-LIGHTSUM	ocr.h	66;"	d
+LIGHTSUM	ocr.h	67;"	d
 MARK	segment.c	1766;"	d	file:
-MAX	ocr.h	40;"	d
-MAXGLYPHHEIGHT	ocr.h	54;"	d
-MAXGLYPHWIDTH	ocr.h	53;"	d
-MAXSHEAR	ocr.h	59;"	d
+MAX	ocr.h	41;"	d
+MAXGLYPHHEIGHT	ocr.h	55;"	d
+MAXGLYPHWIDTH	ocr.h	54;"	d
+MAXSHEAR	ocr.h	60;"	d
 MAXTEMPLATES	template.c	26;"	d	file:
-MAXTREEDEPTH	ocr.h	56;"	d
-MIN	ocr.h	39;"	d
-MINGLYPHHEIGHT	ocr.h	51;"	d
-MINGLYPHWIDTH	ocr.h	52;"	d
-MINMATCH	ocr.h	48;"	d
-MINWIDTH	ocr.h	50;"	d
-OCRFAILS	ocr.h	206;"	d
-PRECISION	ocr.h	58;"	d
+MAXTREEDEPTH	ocr.h	57;"	d
+MIN	ocr.h	40;"	d
+MINGLYPHHEIGHT	ocr.h	52;"	d
+MINGLYPHWIDTH	ocr.h	53;"	d
+MINMATCH	ocr.h	49;"	d
+MINWIDTH	ocr.h	51;"	d
+OCRFAILS	ocr.h	207;"	d
+PRECISION	ocr.h	59;"	d
 RTL	dl.c	/^int RTL;$/;"	v
-SAYERROR	ocr.h	31;"	d
-SHEARSCALE	ocr.h	67;"	d
+SAYERROR	ocr.h	32;"	d
+SHEARSCALE	ocr.h	68;"	d
 SKIPBLANKCOLS	segment.c	72;"	d	file:
 SKIPBLANKLINES	segment.c	58;"	d	file:
 SKIPNONBLANKCOLS	segment.c	79;"	d	file:
 SKIPNONBLANKLINES	segment.c	65;"	d	file:
-SLANT	ocr.h	68;"	d
+SLANT	ocr.h	69;"	d
 SOMEDARK	segment.c	352;"	d	file:
-SPACEFRACTION	ocr.h	62;"	d
+SPACEFRACTION	ocr.h	63;"	d
 SPLITGAP	segment.c	23;"	d	file:
-SPLITTABLE	ocr.h	64;"	d
-TUPLELENGTH	ocr.h	46;"	d
+SPLITTABLE	ocr.h	65;"	d
+TUPLELENGTH	ocr.h	47;"	d
 UNMARK	segment.c	1767;"	d	file:
-VERSION	ocr.h	25;"	d
+VERSION	ocr.h	26;"	d
 acceptInformation	gtkDisplay.c	/^gboolean acceptInformation(GtkWidget *viewport, GdkEventButton *event,$/;"	f
 acceptValue	gtkDisplay.c	/^gboolean acceptValue(GtkEntry *newValueWidget, gpointer data) {$/;"	f
 adjustLineStats	segment.c	/^void adjustLineStats(textLine *aLine) {$/;"	f
@@ -67,6 +67,7 @@ averageLineHeight	segment.c	/^float averageLineHeight;$/;"	v
 ballOverlapBounds	dl.c	/^static int ballOverlapBounds(tuple_t probe, kd_node_t *treeNode,$/;"	f	file:
 ballWithinBounds	dl.c	/^static int ballWithinBounds(tuple_t probe, kd_node_t *treeNode,$/;"	f	file:
 blueStyle	gtkDisplay.c	/^GtkStyle *redStyle, *greenStyle, *blueStyle, *yellowStyle;$/;"	v
+bookName	main.c	/^const char *bookName = 0; \/\/ file name of book models$/;"	v
 bottom	ocr.h	/^	int bottom; \/\/ row following the bottom of the text line (same as in$/;"	m	struct:glyph_s
 bottom	ocr.h	/^	int bottom; \/\/ row following the bottom of the text line$/;"	m	struct:__anon1
 bucket	ocr.h	/^	bucket_t *bucket;$/;"	m	struct:kd_node_s
@@ -107,7 +108,7 @@ distance	ocr.h	/^	float distance; \/\/ closest distance to known glyph, or -1 if
 doExit	gtkDisplay.c	/^void doExit() {$/;"	f
 end	ocr.h	/^	glyph_t *end; \/\/ the last glyph; points to dummy if none.$/;"	m	struct:__anon1
 evaluatePathSplit	segment.c	/^float evaluatePathSplit(glyph_t *glyphPtr, glyph_t *first, int *splitPath) {$/;"	f
-false	ocr.h	60;"	d
+false	ocr.h	61;"	d
 fileBase	readPicture.c	/^const char *fileBase = 0; \/\/ file name of picture (just the base part)$/;"	v
 fillTuple	categorize.c	/^void fillTuple(glyph_t *glyph, tuple_t tuple) {$/;"	f
 findCells	segment.c	/^void findCells(top, bottom, left, right) {$/;"	f
@@ -182,6 +183,7 @@ minGlyphHeight	main.c	/^int minGlyphHeight = MINGLYPHHEIGHT;$/;"	v
 minGlyphWidth	main.c	/^int minGlyphWidth = MINGLYPHWIDTH;$/;"	v
 minMatch	main.c	/^float minMatch = MINMATCH;$/;"	v
 minMatch2	main.c	/^float minMatch2 = MINMATCH*MINMATCH;$/;"	v
+modelJson	main.c	/^PyObject *modelJson; \/\/ Contents of the model.json file$/;"	v
 myTiff	readPicture.c	/^TIFF* myTiff = NULL;$/;"	v
 narrowGlyph	segment.c	/^void narrowGlyph(glyph_t *glyph) {$/;"	f
 narrowGlyphs	segment.c	/^void narrowGlyphs() {$/;"	f
@@ -251,7 +253,7 @@ splitLine	segment.c	/^void splitLine(lineHeaderList *curLineHeader) {$/;"	f
 splitTop	ocr.h	/^	int splitTop, splitBottom; \/\/ boolean: artificially split at top or bottom$/;"	m	struct:__anon1
 splitWideGlyphs	segment.c	/^void splitWideGlyphs() {$/;"	f
 splittable	main.c	/^float splittable = SPLITTABLE;$/;"	v
-swap	dl.c	261;"	d	file:
+swap	dl.c	272;"	d	file:
 templateData	template.c	/^char *templateData[MAXTEMPLATES];$/;"	v
 templateDataCount	template.c	/^int templateDataCount;$/;"	v
 textBuffer	gtkDisplay.c	/^GtkTextBuffer *textBuffer;$/;"	v
@@ -262,7 +264,7 @@ top	ocr.h	/^	int top; \/\/ row of the top of the text line (same as in textLine)
 top	ocr.h	/^	int top; \/\/ row of the top of the text line$/;"	m	struct:__anon1
 totalHeight	segment.c	/^int totalWidth = 0, totalHeight = 0, glyphCount = 0;$/;"	v
 totalWidth	segment.c	/^int totalWidth = 0, totalHeight = 0, glyphCount = 0;$/;"	v
-true	ocr.h	61;"	d
+true	ocr.h	62;"	d
 tryPathSeparation	segment.c	/^int *tryPathSeparation(glyph_t *glyphPtr) {$/;"	f
 tryPathSeparationOld	segment.c	/^int *tryPathSeparationOld(glyph_t *glyphPtr) { \/\/ working, to be improved$/;"	f
 tuple	ocr.h	/^	tuple_t tuple;$/;"	m	struct:glyph_s

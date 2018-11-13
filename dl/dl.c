@@ -1,5 +1,5 @@
 /*
-kd.c
+dl.c
 
 Copyright © Raphael Finkel 2007-2010 raphael@cs.uky.edu
 
@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <math.h>
-#include </usr/include/python2.7/Python.h>
 #include <string.h>
 #include "ocr.h"
 
@@ -31,16 +30,22 @@ char* callPythonFunc(char* filename, char* function, tuple_t args) {
   // Confirm that the Python interpreter is looking at this folder path
   PyObject *sysmodule = PyImport_ImportModule("sys");
   PyObject *syspath = PyObject_GetAttrString(sysmodule, "path");
-  PyList_Append(syspath, PyString_FromString("."));
+  PyList_Append(syspath, PyUnicode_FromString("."));
   Py_DECREF(syspath);
   Py_DECREF(sysmodule);
 
   // Get references to the "filename" Python file and
   // "function" inside of said file.
   PyObject *mymodule = PyImport_ImportModule(filename);
-  assert(mymodule != NULL);
+  if (mymodule == NULL) {
+    PyErr_Print();
+    exit(1);
+  }
   PyObject *myfunc = PyObject_GetAttrString(mymodule, function);
-  assert(myfunc != NULL);
+  if (myfunc == NULL) {
+    PyErr_Print();
+    exit(1);
+  }
 
   // Convert tuple into a Python list
   // fprintf(stdout, "before allocate\n");
@@ -58,18 +63,29 @@ char* callPythonFunc(char* filename, char* function, tuple_t args) {
   // fprintf(stdout, "after build\n");
 
   PyObject *maxLength = Py_BuildValue("i", TUPLELENGTH);
+  PyObject *dataName = Py_BuildValue("s", bookName);
+  // PyObject *modelJsonString = Py_BuildValue("s", modelJson);
   // Call the Python function using the arglist and get its result
   PyObject *result = PyObject_CallFunctionObjArgs(myfunc, arglist,
-    maxLength, NULL);
-  assert(result != NULL);
-  char* retval = (char*) PyString_AsString(result);
+    maxLength, modelJson, NULL);
+  if (result == NULL) {
+    PyErr_Print();
+    exit(1);
+  }
+  char* retval = (char*) PyUnicode_AsEncodedString(result, "utf-8", "strict");
   Py_DECREF(result);
   Py_DECREF(maxLength);
+  Py_DECREF(dataName);
   Py_DECREF(arglist);
   Py_DECREF(myfunc);
   Py_DECREF(mymodule);
   return retval;
-}
+} // callPythonFunc
+
+const char *ocrValue(tuple_t tuple) {
+  char* retval = (char*) callPythonFunc("dl", "ocrValue", tuple);
+  return retval;
+} // ocrValue
 
 static float distSquared(tuple_t tuple1, tuple_t tuple2) {
 	int dimension;
@@ -220,11 +236,6 @@ float ocrDistance2(tuple_t tuple) { // returns square of distance
 	if (index == -1) return(BIGDIST);
 	return (distSquared(tuple, bucket->key[index]));
 } // ocrDistance
-
-const char *ocrValue(tuple_t tuple) {
-  char* retval = (char*) callPythonFunc("dl", "ocrValue", tuple);
-  return retval;
-} // ocrValue
 
 int maxSpreadDimension(tuple_t *key, int count) {
 	float maxSpread = 0;

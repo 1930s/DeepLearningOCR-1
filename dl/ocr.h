@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include </usr/include/python3.6/Python.h>
 // #include "/tmp/dmalloc-5.5.2/dmalloc.ho"
 
 #define VERSION "2.0"
@@ -57,8 +58,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define BIGDIST 1.0e10 // unreasonably large distance
 #define PRECISION "%0.3f" // positions after the decimal
 #define MAXSHEAR 4 // if worse, just use 0
-#define false 0 
-#define true 1 
+#define false 0
+#define true 1
 #define SPACEFRACTION (0.60) // fraction of an average glyph we all a space
 #define GOODMATCH (0.40) // distance for a match to be "good", not just ok.
 #define SPLITTABLE (1.10) // how  much wider than normal is worth considering
@@ -184,7 +185,7 @@ typedef struct p_kd_node_s {
 	tuple_t newTuple();
 	tuple_t copyTuple();
 
-// provided by kd.c
+// provided by dl.c
 	kd_node_t *buildEmptyTree();
 	void insertTuple(kd_node_t *tree, tuple_t tuple, char *value);
 	extern kd_node_t *categorization; // the root
@@ -240,3 +241,5 @@ typedef struct p_kd_node_s {
 	extern int mayCombine;
 	extern int alwaysCombine; // for training purposes
 	extern int minGlyphArea; // default INFTY
+	extern const char *bookName;
+	extern PyObject *modelJson;

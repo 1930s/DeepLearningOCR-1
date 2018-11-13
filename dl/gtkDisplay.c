@@ -246,7 +246,7 @@ void displayText(void *theButton, int *visual) { // from signal
 		gtk_text_buffer_get_end_iter(textBuffer, &endIter);
 		gtk_text_buffer_delete(textBuffer, &startIter, &endIter);
 	} // visual
-// fill new text
+	// fill new text
 	char lineBuf[BUFSIZ];
 	lineHeaderList *curLine;
 	int prevBottom = 0;
