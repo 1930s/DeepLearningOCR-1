@@ -217,7 +217,8 @@ int main (int argc, char * const argv[]) {
 
 		infile = fopen("model.json", "r");
 		if (infile == NULL) {
-			fprintf(stderr, "Couldn't load json file");
+			fprintf(stderr, "ERROR: Couldn't load json file. "
+											"Please run training.\n");
 			return 1;
 		}
 		fseek(infile, 0L, SEEK_END);
@@ -226,7 +227,7 @@ int main (int argc, char * const argv[]) {
 
 		buffer = (char*) calloc(numbytes, sizeof(char));
 		if (buffer == NULL) {
-			fprintf(stderr, "Json file was empty");
+			fprintf(stderr, "Json file was empty\n");
 			return 1;
 		}
 
@@ -244,7 +245,7 @@ int main (int argc, char * const argv[]) {
 
 	  // Get references to the "filename" Python file and
 	  // "function" inside of said file.
-	  PyObject *mymodule = PyImport_ImportModule("load_json");
+	  PyObject *mymodule = PyImport_ImportModule("dl");
 	  if (mymodule == NULL) {
 	    PyErr_Print();
 	    exit(1);

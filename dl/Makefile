@@ -10,6 +10,7 @@ LIBS += -ltiff `pkg-config --libs gtk+-2.0` $(BIDI) $(PANGOX)
 # LIBS += /tmp/dmalloc-5.5.2/libdmalloc.a
 OBJS = readPicture.o main.o segment.o display.o gtkDisplay.o categorize.o \
 	training.o template.o dl.o
+JSONS = *.json *.h5
 INCLUDES = `pkg-config --cflags gtk+-2.0`
 PYTHON = -lpython3.6m -L /usr/lib/python3.6/config/ -I /usr/include/python3.6/
 OLDINCLUDES = -I /usr/include/gtk-2.0 -I /usr/include/glib-2.0 \
@@ -36,7 +37,7 @@ tags: *.c *.h
 	ctags *.c *.h
 
 clean:
-	rm -f $(GOAL) $(OBJS) *.pyc
+	rm -f $(GOAL) $(OBJS) *.pyc $(JSONS)
 
 IMPORTANT = ocr/*.c ocr/*.h ocr/demo ocr/../fontData/yiddishData \
 	ocr/README ocr/Makefile ocr/COPYRIGHT ocr/fixutf8.pl
@@ -96,7 +97,7 @@ rotate:
 BASHEVIS = -H 600 -W 600 -d 30 -w 3 -h 5 -x -i -p 1.4 -s 0.4 -A -m 1.1
 bashevis-i:
 	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) \
-	../tmp/bashevis-sotn-in-goray/page*.tif
+	-b bashevis ../tmp/bashevis-sotn-in-goray/page*.tif
 
 bashevis-b:
 	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) -t \
@@ -109,7 +110,7 @@ bashevis-t:
 TEST = -H 600 -W 600 -d 15 -w 3 -h 4 -p 1.2 -m 1.0 -x -i
 test-i:
 	$(GOAL) -f ../fontData/english.data $(TEST) \
-	../samples/lorem*.tif
+	-b english ../samples/lorem*.tif
 
 test-b:
 	$(GOAL) -f ../fontData/english.data $(TEST) -t \

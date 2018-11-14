@@ -14,32 +14,10 @@ import sys
 import tensorflow as tf
 from tensorflow import keras
 
+import time # only use for demo video
+
 # Don't shorten printing numpy lists (i.e. don't use "...")
 # np.set_printoptions(threshold=np.nan)
-
-# TODO: Output onehot_encoded into a file, load it into C, then pass it to this script
-# TODO: Separate training and predicting code into two separate files
-#       - Add entry in Makefile "make train" to reference training
-#       - Call prediction through C-Python interface
-
-
-# Import pre-trained font data
-def load_font(filename):
-    trained_font = []
-    expected = []
-    # count = 0
-    with open(filename, encoding="utf8") as f:
-        for line in f.readlines():
-            # count += 1
-            splits = line.strip().split(" ")
-            # print(count, splits)
-            character_data = [float(num) for num in splits[:-1]]
-            trained_font.append(character_data)
-            expected.append(splits[-1])
-
-    # data = tf.convert_to_tensor(trained_font)
-    # outputs = tf.convert_to_tensor(expected)
-    return trained_font, expected
 
 
 # Train the Deep Neural Network using a given filename
@@ -53,9 +31,11 @@ def main():
         return 1
     else:
         # Pre-trained fontData and expected characters with matching array indices
-        font, expected = load_font(path.abspath(path.join(__file__, "../../fontData/" + sys.argv[1])))
-        uniques = list(set(expected))
-        # print("Number of unique characters:", len(uniques))
+        dataset = np.genfromtxt("../fontData/" + sys.argv[1], dtype='str', delimiter=" ", encoding="utf8")
+
+        X = dataset[:,0:-1].astype(dtype='float')
+        Y = dataset[:,-1]
+        uniques = list(set(Y))
 
         n_input = 27
         n_neurons_in_h1 = 512
@@ -63,14 +43,12 @@ def main():
         n_neurons_in_h3 = 128
         n_classes = len(uniques)
 
-        learning_rate = 0.01
-        num_epochs = 10
-        steps_per_epoch = 100
+        learning_rate = 0.001
+        num_epochs = 3
+        steps_per_epoch = 75
 
-        dataset = np.genfromtxt("../fontData/" + sys.argv[1], dtype='str', delimiter=" ", encoding="utf8")
-
-        X = dataset[:,0:-1].astype(dtype='float')
-        Y = dataset[:,-1]
+        # print("X", X)
+        # print("Y", Y)
 
         # Integer encode
         label_encoder = LabelEncoder()
@@ -91,40 +69,41 @@ def main():
         onehot_json = "onehot.json"
         json.dump(onehot_list, codecs.open(onehot_json, 'w', encoding='utf-8'), sort_keys=True, indent=4)
 
-        # TODO: output the onehot_encoded list and load it into C
-        # Pass it as an arg to this python file, then call the LabelEncoder to inverse it
-
         # onehot_encoded is 2D array of either ones or zeroes, where only one 1 is in each line
         # its length is the same as the length of the fontData file (bad?)
 
-        Y = onehot_encoded
+        # Y = onehot_encoded
 
         # print("X:", X)
         # print("Y:", Y)
 
         # Get lists to train the Neural Network on
         train_images = np.array(X)
-        train_labels = np.array(Y)
+        train_labels = np.array(onehot_encoded)
 
         # Make testing samples
-        test_sample_size = int(0.2 * len(Y))
-        test_images = np.array(X[np.random.choice(len(Y), size=test_sample_size, replace=False)])
-        test_labels = np.array(Y[np.random.choice(len(Y), size=test_sample_size, replace=False)])
+        test_sample_size = int(0.4 * len(X))
+        choices = np.random.choice(len(X), size=test_sample_size, replace=False)
+        test_images = np.array(X[choices])
+        test_labels = np.array(onehot_encoded[choices])
+
+        # print("test", test_images[0])
+        # print("test", test_labels[0])
+
+        # print(label_encoder.inverse_transform([np.argmax(test_labels[0, :])]))
 
         # Create a Neural Network with 3 hidden layers and 1 output layer
         model = keras.Sequential([
-            keras.layers.Dense(units=n_neurons_in_h1, input_shape=(n_input,), activation="sigmoid"),
-            keras.layers.Dense(units=n_neurons_in_h2, activation="sigmoid"),
-            keras.layers.Dense(units=n_neurons_in_h3, activation="sigmoid"),
+            keras.layers.Dense(units=n_neurons_in_h1, input_shape=(n_input,)),
+            keras.layers.Dropout(0.2),
+            keras.layers.Dense(units=n_neurons_in_h2),
+            keras.layers.Dense(units=n_neurons_in_h3, kernel_initializer="normal"),
             keras.layers.Dense(units=n_classes, activation="softmax")
         ])
 
-        model.compile(optimizer=tf.train.AdamOptimizer(learning_rate=learning_rate),
+        model.compile(optimizer=keras.optimizers.Adam(lr=learning_rate),
                       loss='categorical_crossentropy',
                       metrics=['accuracy'])
-
-        # print(train_images[0])
-        # print(train_labels[0])
 
         # Train the model to the given fontData
         model.fit(train_images, train_labels, epochs=num_epochs, steps_per_epoch=steps_per_epoch)
@@ -132,9 +111,21 @@ def main():
         print("Performing tests")
         test_loss, test_acc = model.evaluate(test_images, test_labels)
 
-        print("Test accuracy:", test_acc)
+        print("Test accuracy:", test_acc * 100, "%")
 
-        predictions = model.predict(test_images)
+        # Test the model on the fontData, comparing expected and predicted output
+        correct_count = 0
+        predictions = [model.predict(tf.constant(X[index], shape=[1, n_input]), steps=1) for index in range(len(X))]
+        for index in range(len(predictions)):
+            # print(predictions[index])
+            character = label_encoder.inverse_transform([np.argmax(predictions[index])])[0]
+            expected_char = label_encoder.inverse_transform([np.argmax(onehot_encoded[index])])[0]
+            print("\n  Expected:", expected_char)
+            print("Prediction:", character)
+            if (expected_char == character):
+                correct_count += 1
+            # time.sleep(0.25)
+        print("Num correct:", correct_count, "out of", len(predictions))
 
         # serialize model to JSON
         model_json = model.to_json()
