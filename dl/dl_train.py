@@ -38,9 +38,9 @@ def main():
         uniques = list(set(Y))
 
         n_input = 27
-        n_neurons_in_h1 = 100
-        n_neurons_in_h2 = 50
-        n_neurons_in_h3 = 25
+        n_neurons_in_h1 = 1000
+        n_neurons_in_h2 = 500
+        n_neurons_in_h3 = 250
         n_classes = len(uniques)
 
         learning_rate = 0.001

@@ -9,8 +9,9 @@ PANGOX = /usr/lib/x86_64-linux-gnu/libpangox-1.0.so.0
 LIBS += -ltiff `pkg-config --libs gtk+-2.0` $(BIDI) $(PANGOX)
 # LIBS += /tmp/dmalloc-5.5.2/libdmalloc.a
 OBJS = readPicture.o main.o segment.o display.o gtkDisplay.o categorize.o \
-	training.o template.o dl.o
+	training.o template.o svm.o
 JSONS = *.json *.h5
+PKL = *.pkl
 INCLUDES = `pkg-config --cflags gtk+-2.0`
 PYTHON = -lpython3.6m -L /usr/lib/python3.6/config/ -I /usr/include/python3.6/
 OLDINCLUDES = -I /usr/include/gtk-2.0 -I /usr/include/glib-2.0 \
@@ -37,7 +38,7 @@ tags: *.c *.h
 	ctags *.c *.h
 
 clean:
-	rm -f $(GOAL) $(OBJS) *.pyc $(JSONS)
+	rm -f $(GOAL) $(OBJS) *.pyc $(JSONS) $(PKL)
 
 IMPORTANT = ocr/*.c ocr/*.h ocr/demo ocr/../fontData/yiddishData \
 	ocr/README ocr/Makefile ocr/COPYRIGHT ocr/fixutf8.pl
@@ -104,7 +105,7 @@ bashevis-b:
 	-b bashevis	../tmp/bashevis-sotn-in-goray/page*.tif
 
 bashevis-t:
-	python3 dl_train.py bashevis.data
+	python3 svm_train.py bashevis.data
 
 # Lorem Ipsum fontData example
 TEST = -H 600 -W 600 -d 15 -w 3 -h 4 -p 1.2 -m 1.0 -x -i
@@ -118,4 +119,4 @@ test-b:
 
 # Train the Deep Network
 test-t:
-	python3 dl_train.py english.data
+	python3 svm_train.py english.data

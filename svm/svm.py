@@ -2,6 +2,8 @@ import json
 import numpy as np
 import os.path as path
 from sklearn.preprocessing import LabelEncoder
+from sklearn import svm
+import pickle
 import tensorflow as tf
 from tensorflow import keras
 
@@ -15,39 +17,21 @@ loaded_model = ""
 onehot_encoded = ""
 
 
-def load_model(model_json, book_name):
-    # load json and create model
-    loaded_model = keras.models.model_from_json(model_json)
-    # load weights into new model
-    loaded_model.load_weights("model.h5")
-    # print("Loaded model from disk")
-
-    # Compile the model and test on it
-    loaded_model.compile(loss='mean_squared_error', optimizer='rmsprop', metrics=['accuracy'])
-    # test_loss, test_acc = loaded_model.evaluate(test_images, test_labels)
-
-    # print("Test accuracy:", test_acc)
-
-    onehot_json_file = open("onehot.json", 'r')
-    onehot_json = onehot_json_file.read()
-    onehot_json_file.close()
-
-    global onehot_encoded
-    onehot_encoded = json.loads(onehot_json)
-    # print(onehot_encoded)
-
-    dataset = np.genfromtxt("../fontData/" + book_name + ".data", dtype='str', delimiter=" ", encoding="utf8")
-    expecteds = dataset[:, -1]
-    label_encoder.fit_transform(expecteds)
-
-    return loaded_model, onehot_encoded, label_encoder
-
-
 # Function that the C-program calls, return the predicted character
-def ocrValue(tuple_in, max_length, model_json):
+def ocrValue(tuple_in, max_length):
+
+    # load the classifier
+    with open('my_dumped_classifier.pkl', 'rb') as g:
+        loaded_model = pickle.load(g)
+
+    #print("yea hey cool")
+    #ret_char = 'a'
+    #print(tuple_in)
+    '''
     loaded_model = model_json[0]
     onehot_encoded = model_json[1]
     label_encoder = model_json[2]
+    '''
     # For some reason, the list comes in as length 54 but with only 27 elements
     # Extract the elements from indices 27 through 53
     temp = []
@@ -57,11 +41,25 @@ def ocrValue(tuple_in, max_length, model_json):
             temp.append(tuple_in[dimension] / 3)
         else:
             temp.append(tuple_in[dimension])
+    '''
     # print("Length:", len(temp), "\t data:", temp)
     tuple_out = tf.constant(temp, shape=[1, n_input])
     ret_char = str(label_encoder.inverse_transform([np.argmax(onehot_encoded[np.argmax(loaded_model.predict(tuple_out, steps=1))])])[0]).encode('utf-8')
     # print("Python returned:", ret_char, type(ret_char))
     # print(ret_char.encode('utf-8'))
+    '''
+    #temp2 = [[]]
+    char_array = np.array(temp)
+    #print("char_array", char_array)
+    char_array = np.reshape(char_array, (1, 27))
+    #temp2.append(char_array)
+    #char_array2 = temp2)
+    #print("char_array2", temp2)
+    ret_charray = loaded_model.predict(char_array)
+    ret_char = (ret_charray[0])
+    ret_char = str(ret_char[0]).encode('utf-8')
+    #print(ret_char)
+    #print("hey yea also cool")
     return ret_char
 
 '''
