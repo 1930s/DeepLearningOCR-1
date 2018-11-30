@@ -72,9 +72,7 @@ char* callPythonFunc(char* filename, char* function, tuple_t args) {
     PyErr_Print();
     exit(1);
   }
-  char* retval = (char*) PyBytes_AsString(result);
-  // retval = strdup(retval);
-  // printf("Predicted: %s\n", retval);
+  char* retval = (char*) PyUnicode_AsEncodedString(result, "utf-8", "strict");
   Py_DECREF(result);
   Py_DECREF(maxLength);
   Py_DECREF(dataName);
