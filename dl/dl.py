@@ -51,6 +51,7 @@ def ocrValue(tuple_in, max_length, model_json):
     # For some reason, the list comes in as length 54 but with only 27 elements
     # Extract the elements from indices 27 through 53
     temp = []
+    # print("reeeee", range(max_length, len(tuple_in)))
     for dimension in range(max_length, len(tuple_in)):
         if (dimension >= len(tuple_in) - 2):
             temp.append(tuple_in[dimension] / 3)
@@ -58,23 +59,25 @@ def ocrValue(tuple_in, max_length, model_json):
             temp.append(tuple_in[dimension])
     # print("Length:", len(temp), "\t data:", temp)
     tuple_out = tf.constant(temp, shape=[1, n_input])
-    ret_char = label_encoder.inverse_transform([np.argmax(onehot_encoded[np.argmax(loaded_model.predict(tuple_out, steps=1))])])[0]
-    # print(ret_char)
+    ret_char = str(label_encoder.inverse_transform([np.argmax(onehot_encoded[np.argmax(loaded_model.predict(tuple_out, steps=1))])])[0]).encode('utf-8')
+    # print("Python returned:", ret_char, type(ret_char))
+    # print(ret_char.encode('utf-8'))
     return ret_char
 
-
+'''
 book = "english"
 tuples = np.genfromtxt("../fontData/" + book + ".data", dtype='str', delimiter=" ", encoding="utf8")
 max = 27
 with open("model.json", 'r') as f:
     mod = f.read()
-    model = load_model(mod, book)
     correct_count = 0
     for tup in tuples:
+        # print(tup)
         expected_char = tup[-1]
-        predicted = ocrValue(tup[0:-1], max, model)
+        predicted = ocrValue(tup[0:-1], max, load_model(mod, book))
         print("\n  Expected:", expected_char, "\nPrediction:", predicted)
         if (expected_char == predicted):
             correct_count += 1
         # time.sleep(0.25)
     print("Num correct:", correct_count, "out of", len(tuples))
+'''

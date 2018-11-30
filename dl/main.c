@@ -272,7 +272,6 @@ int main (int argc, char * const argv[]) {
 	  Py_DECREF(myfunc);
 	  Py_DECREF(mymodule);
 
-
     readTuples();
     while (optind < argc) { // each TIFF file
         fileBase = argv[optind++];

@@ -44,8 +44,8 @@ def main():
         n_classes = len(uniques)
 
         learning_rate = 0.001
-        num_epochs = 3
-        steps_per_epoch = 75
+        num_epochs = 10
+        steps_per_epoch = 100
 
         # print("X", X)
         # print("Y", Y)
@@ -114,6 +114,8 @@ def main():
         print("Test accuracy:", test_acc * 100, "%")
 
         # Test the model on the fontData, comparing expected and predicted output
+        '''
+        print("Testing on fontData file...")
         correct_count = 0
         predictions = [model.predict(tf.constant(X[index], shape=[1, n_input]), steps=1) for index in range(len(X))]
         for index in range(len(predictions)):
@@ -126,6 +128,7 @@ def main():
                 correct_count += 1
             # time.sleep(0.25)
         print("Num correct:", correct_count, "out of", len(predictions))
+        '''
 
         # serialize model to JSON
         model_json = model.to_json()
