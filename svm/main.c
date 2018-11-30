@@ -211,65 +211,64 @@ int main (int argc, char * const argv[]) {
     }
 
     // Read the neural network json model and save it as a string
+		FILE *infile;
+		char *buffer;
+		long numbytes;
 
-		//FILE *infile;
-		//char *buffer;
-		//long numbytes;
+		infile = fopen("model.json", "r");
+		if (infile == NULL) {
+			fprintf(stderr, "ERROR: Couldn't load json file. "
+											"Please run training.\n");
+			return 1;
+		}
+		fseek(infile, 0L, SEEK_END);
+		numbytes = ftell(infile);
+		fseek(infile, 0L, SEEK_SET);
 
-		//infile = fopen("model.json", "r");
-		//if (infile == NULL) {
-		//	fprintf(stderr, "ERROR: Couldn't load json file. "
-		//									"Please run training.\n");
-		//	return 1;
-		//}
-		//fseek(infile, 0L, SEEK_END);
-		//numbytes = ftell(infile);
-		//fseek(infile, 0L, SEEK_SET);
-
-		//buffer = (char*) calloc(numbytes, sizeof(char));
-		//if (buffer == NULL) {
-		//	fprintf(stderr, "Json file was empty\n");
-		//	return 1;
-		//}
+		buffer = (char*) calloc(numbytes, sizeof(char));
+		if (buffer == NULL) {
+			fprintf(stderr, "Json file was empty\n");
+			return 1;
+		}
 
 		// Contents of the json are now in "buffer"
-		//fread(buffer, sizeof(char), numbytes, infile);
-		//fclose(infile);
+		fread(buffer, sizeof(char), numbytes, infile);
+		fclose(infile);
 
-		//Py_Initialize();
+		Py_Initialize();
 	  // Confirm that the Python interpreter is looking at this folder path
-	  //PyObject *sysmodule = PyImport_ImportModule("sys");
-	  //PyObject *syspath = PyObject_GetAttrString(sysmodule, "path");
-	  //PyList_Append(syspath, PyUnicode_FromString("."));
-	  //Py_DECREF(syspath);
-	  //Py_DECREF(sysmodule);
+	  PyObject *sysmodule = PyImport_ImportModule("sys");
+	  PyObject *syspath = PyObject_GetAttrString(sysmodule, "path");
+	  PyList_Append(syspath, PyUnicode_FromString("."));
+	  Py_DECREF(syspath);
+	  Py_DECREF(sysmodule);
 
 	  // Get references to the "filename" Python file and
 	  // "function" inside of said file.
-	  //PyObject *mymodule = PyImport_ImportModule("svm");
-	  //if (mymodule == NULL) {
-	  //  PyErr_Print();
-	  //  exit(1);
-	  //}
-	 // PyObject *myfunc = PyObject_GetAttrString(mymodule, "load_model");
-	 // if (myfunc == NULL) {
-	 //   PyErr_Print();
-	 //   exit(1);
-	 // }
+	  PyObject *mymodule = PyImport_ImportModule("dl");
+	  if (mymodule == NULL) {
+	    PyErr_Print();
+	    exit(1);
+	  }
+	  PyObject *myfunc = PyObject_GetAttrString(mymodule, "load_model");
+	  if (myfunc == NULL) {
+	    PyErr_Print();
+	    exit(1);
+	  }
 
-	  //PyObject *modelJsonString = Py_BuildValue("s", buffer);
-	  //PyObject *dataName = Py_BuildValue("s", bookName);
+	  PyObject *modelJsonString = Py_BuildValue("s", buffer);
+	  PyObject *dataName = Py_BuildValue("s", bookName);
 	  // Call the Python function using the arglist and get its result
-	  //PyObject *result = PyObject_CallFunctionObjArgs(myfunc, modelJsonString,
-		//	dataName, NULL);
-	  //if (result == NULL) {
-	  //  PyErr_Print();
-	  //  exit(1);
-	  //}
-		//modelJson = result;
-		//Py_DECREF(modelJsonString);
-	  //Py_DECREF(myfunc);
-	  //Py_DECREF(mymodule);
+	  PyObject *result = PyObject_CallFunctionObjArgs(myfunc, modelJsonString,
+			dataName, NULL);
+	  if (result == NULL) {
+	    PyErr_Print();
+	    exit(1);
+	  }
+		modelJson = result;
+		Py_DECREF(modelJsonString);
+	  Py_DECREF(myfunc);
+	  Py_DECREF(mymodule);
 
     readTuples();
     while (optind < argc) { // each TIFF file

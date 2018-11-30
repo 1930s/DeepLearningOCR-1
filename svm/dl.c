@@ -1,5 +1,5 @@
 /*
-svm.c
+dl.c
 
 Copyright © Raphael Finkel 2007-2010 raphael@cs.uky.edu
 
@@ -85,7 +85,7 @@ char* callPythonFunc(char* filename, char* function, tuple_t args) {
 } // callPythonFunc
 
 const char *ocrValue(tuple_t tuple) {
-  char* retval = (char*) callPythonFunc("svm", "ocrValue", tuple);
+  char* retval = (char*) callPythonFunc("dl", "ocrValue", tuple);
   return retval;
 } // ocrValue
 
