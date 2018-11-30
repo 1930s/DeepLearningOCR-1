@@ -70,11 +70,12 @@ tuples = np.genfromtxt("../fontData/" + book + ".data", dtype='str', delimiter="
 max = 27
 with open("model.json", 'r') as f:
     mod = f.read()
+    model = load_model(mod, book)
     correct_count = 0
     for tup in tuples:
         # print(tup)
         expected_char = tup[-1]
-        predicted = ocrValue(tup[0:-1], max, load_model(mod, book))
+        predicted = ocrValue(tup[0:-1], max, model)
         print("\n  Expected:", expected_char, "\nPrediction:", predicted)
         if (expected_char == predicted):
             correct_count += 1

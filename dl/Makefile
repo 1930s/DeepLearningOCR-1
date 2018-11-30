@@ -38,6 +38,7 @@ tags: *.c *.h
 
 clean:
 	rm -f $(GOAL) $(OBJS) *.pyc $(JSONS)
+	rm -f -r __pycache__/
 
 IMPORTANT = ocr/*.c ocr/*.h ocr/demo ocr/../fontData/yiddishData \
 	ocr/README ocr/Makefile ocr/COPYRIGHT ocr/fixutf8.pl

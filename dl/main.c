@@ -234,7 +234,7 @@ int main (int argc, char * const argv[]) {
 		// Contents of the json are now in "buffer"
 		fread(buffer, sizeof(char), numbytes, infile);
 		fclose(infile);
-
+		// Initialize Python interface
 		Py_Initialize();
 	  // Confirm that the Python interpreter is looking at this folder path
 	  PyObject *sysmodule = PyImport_ImportModule("sys");
@@ -242,7 +242,6 @@ int main (int argc, char * const argv[]) {
 	  PyList_Append(syspath, PyUnicode_FromString("."));
 	  Py_DECREF(syspath);
 	  Py_DECREF(sysmodule);
-
 	  // Get references to the "filename" Python file and
 	  // "function" inside of said file.
 	  PyObject *mymodule = PyImport_ImportModule("dl");
@@ -255,17 +254,20 @@ int main (int argc, char * const argv[]) {
 	    PyErr_Print();
 	    exit(1);
 	  }
-
+		// Build the json as a Python string
 	  PyObject *modelJsonString = Py_BuildValue("s", buffer);
+		// Build the book name as a Python string
 	  PyObject *dataName = Py_BuildValue("s", bookName);
 	  // Call the Python function using the arglist and get its result
-	  PyObject *result = PyObject_CallFunctionObjArgs(myfunc, modelJsonString,
+	  PyObject *modelJson = PyObject_CallFunctionObjArgs(myfunc, modelJsonString,
 			dataName, NULL);
-	  if (result == NULL) {
+	  if (modelJson == NULL) {
 	    PyErr_Print();
 	    exit(1);
 	  }
-		modelJson = result;
+		// modelJson is now an array that contains the model, the onehot_encoded
+		// array, and the label_encoder
+		// Py_DECREF(result);
 		Py_DECREF(modelJsonString);
 	  Py_DECREF(myfunc);
 	  Py_DECREF(mymodule);
