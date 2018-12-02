@@ -242,4 +242,4 @@ typedef struct p_kd_node_s {
 	extern int alwaysCombine; // for training purposes
 	extern int minGlyphArea; // default INFTY
 	extern const char *bookName;
-	extern PyObject *modelJson;
+	extern PyObject *model_list;

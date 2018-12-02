@@ -38,13 +38,13 @@ def main():
         uniques = list(set(Y))
 
         n_input = 27
-        n_neurons_in_h1 = 100
-        n_neurons_in_h2 = 50
-        n_neurons_in_h3 = 25
+        n_neurons_in_h1 = 10
+        n_neurons_in_h2 = 25
+        n_neurons_in_h3 = 10
         n_classes = len(uniques)
 
         learning_rate = 0.001
-        num_epochs = 10
+        num_epochs = 20
         steps_per_epoch = 100
 
         # print("X", X)
@@ -130,12 +130,34 @@ def main():
         print("Num correct:", correct_count, "out of", len(predictions))
         '''
 
+        book = "english"
+        tuples = np.genfromtxt("../fontData/" + book + ".data", dtype='str', delimiter=" ", encoding="utf8")
+        max = 27
+        correct_count = 0
+        for tup in tuples:
+            expected_char = tup[-1]
+            tensor = tf.constant([float(val) for val in tup[0:-1]], shape=[1, n_input])
+            probabilities = model.predict(tensor, steps=1)
+            hot_index = np.argmax(probabilities)
+            endcoded_index = np.argmax(onehot_encoded[hot_index])
+            predicted = str(label_encoder.inverse_transform([endcoded_index])[0])
+            print("\n  Expected:", expected_char, "\nPrediction:", predicted, "\n     Index:", hot_index)
+            print("Other prediction:", tuples[hot_index][-1])
+            print(tup)
+            print(probabilities[0][hot_index])
+            print(probabilities)
+            if (expected_char == predicted):
+                correct_count += 1
+            # time.sleep(0.25)
+        print("Num correct:", correct_count, "out of", len(tuples))
+
+
         # serialize model to JSON
-        model_json = model.to_json()
-        with open("model.json", "w") as json_file:
-            json_file.write(model_json)
+        # model_json = model.to_json()
+        # with open("model.json", "w") as json_file:
+            # json_file.write(model_json)
         # serialize weights to HDF5
-        model.save_weights("model.h5")
+        model.save("model.h5")
         # print("Saved model to disk")
 
         return 0

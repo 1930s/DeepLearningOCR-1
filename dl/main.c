@@ -42,7 +42,7 @@ int mayCombine = 1;
 int alwaysCombine = false;
 int minGlyphArea = 1;
 const char *bookName = 0; // file name of book models
-PyObject *modelJson; // Contents of the model.json file
+PyObject *model_list; // Contents of the model.json file
 
 static void usage() {
 fprintf(stderr,
@@ -211,13 +211,13 @@ int main (int argc, char * const argv[]) {
     }
 
     // Read the neural network json model and save it as a string
-		FILE *infile;
+		/*FILE *infile;
 		char *buffer;
 		long numbytes;
 
-		infile = fopen("model.json", "r");
+		infile = fopen("model.h5", "r");
 		if (infile == NULL) {
-			fprintf(stderr, "ERROR: Couldn't load json file. "
+			fprintf(stderr, "ERROR: Couldn't load model file. "
 											"Please run training.\n");
 			return 1;
 		}
@@ -233,7 +233,7 @@ int main (int argc, char * const argv[]) {
 
 		// Contents of the json are now in "buffer"
 		fread(buffer, sizeof(char), numbytes, infile);
-		fclose(infile);
+		fclose(infile);*/
 
 		Py_Initialize();
 	  // Confirm that the Python interpreter is looking at this folder path
@@ -250,23 +250,25 @@ int main (int argc, char * const argv[]) {
 	    PyErr_Print();
 	    exit(1);
 	  }
-	  PyObject *myfunc = PyObject_GetAttrString(mymodule, "load_model");
+	  PyObject *myfunc = PyObject_GetAttrString(mymodule, "load_saved_model");
 	  if (myfunc == NULL) {
 	    PyErr_Print();
 	    exit(1);
 	  }
 
-	  PyObject *modelJsonString = Py_BuildValue("s", buffer);
+		// printf("%s\n", buffer);
+		// printf("%s\n", bookName);
+	  // PyObject *modelJsonString = Py_BuildValue("s", buffer);
 	  PyObject *dataName = Py_BuildValue("s", bookName);
 	  // Call the Python function using the arglist and get its result
-	  PyObject *result = PyObject_CallFunctionObjArgs(myfunc, modelJsonString,
+	  PyObject *result = PyObject_CallFunctionObjArgs(myfunc,
 			dataName, NULL);
 	  if (result == NULL) {
 	    PyErr_Print();
 	    exit(1);
 	  }
-		modelJson = result;
-		Py_DECREF(modelJsonString);
+		model_list = result;
+		// Py_DECREF(modelJsonString);
 	  Py_DECREF(myfunc);
 	  Py_DECREF(mymodule);
 
@@ -331,6 +333,6 @@ int main (int argc, char * const argv[]) {
         } while (anotherPage());
     } // each file
 
-		free(modelJson);
+		free(model_list);
     return(0);
 } // main

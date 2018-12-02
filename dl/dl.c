@@ -67,12 +67,13 @@ char* callPythonFunc(char* filename, char* function, tuple_t args) {
   // PyObject *modelJsonString = Py_BuildValue("s", modelJson);
   // Call the Python function using the arglist and get its result
   PyObject *result = PyObject_CallFunctionObjArgs(myfunc, arglist,
-    maxLength, modelJson, NULL);
+    maxLength, model_list, NULL);
   if (result == NULL) {
     PyErr_Print();
     exit(1);
   }
   char* retval = (char*) PyBytes_AsString(result);
+  printf("%s", retval);
   // retval = strdup(retval);
   // printf("Predicted: %s\n", retval);
   Py_DECREF(result);
