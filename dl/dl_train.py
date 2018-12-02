@@ -129,7 +129,7 @@ def main():
             # time.sleep(0.25)
         print("Num correct:", correct_count, "out of", len(predictions))
         '''
-
+        '''
         book = "english"
         tuples = np.genfromtxt("../fontData/" + book + ".data", dtype='str', delimiter=" ", encoding="utf8")
         max = 27
@@ -150,7 +150,7 @@ def main():
                 correct_count += 1
             # time.sleep(0.25)
         print("Num correct:", correct_count, "out of", len(tuples))
-
+        '''
 
         # serialize model to JSON
         # model_json = model.to_json()
