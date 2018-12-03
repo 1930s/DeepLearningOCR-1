@@ -196,9 +196,6 @@ int main (int argc, char * const argv[]) {
                 minGlyphArea = atoi(optarg);
                 // fprintf(stderr, "Minimum acceptable area %d\n", minGlyphArea);
                 break;
-            case 'b':
-                bookName = optarg;
-                break;
             case '?':
                 fprintf(stdout, "unrecognized option\n");
                 usage();
@@ -209,31 +206,6 @@ int main (int argc, char * const argv[]) {
     if (fontFile == NULL || bookName == NULL) {
         usage();
     }
-
-    // Read the neural network json model and save it as a string
-		/*FILE *infile;
-		char *buffer;
-		long numbytes;
-
-		infile = fopen("model.h5", "r");
-		if (infile == NULL) {
-			fprintf(stderr, "ERROR: Couldn't load model file. "
-											"Please run training.\n");
-			return 1;
-		}
-		fseek(infile, 0L, SEEK_END);
-		numbytes = ftell(infile);
-		fseek(infile, 0L, SEEK_SET);
-
-		buffer = (char*) calloc(numbytes, sizeof(char));
-		if (buffer == NULL) {
-			fprintf(stderr, "Json file was empty\n");
-			return 1;
-		}
-
-		// Contents of the json are now in "buffer"
-		fread(buffer, sizeof(char), numbytes, infile);
-		fclose(infile);*/
 
 		Py_Initialize();
 	  // Confirm that the Python interpreter is looking at this folder path
@@ -256,20 +228,15 @@ int main (int argc, char * const argv[]) {
 	    exit(1);
 	  }
 
-		// printf("%s\n", buffer);
-		// printf("%s\n", bookName);
-	  // PyObject *modelJsonString = Py_BuildValue("s", buffer);
-	  PyObject *dataName = Py_BuildValue("s", bookName);
+	  PyObject *fontDataName = Py_BuildValue("s", fontFile);
 	  // Call the Python function using the arglist and get its result
 	  PyObject *result = PyObject_CallFunctionObjArgs(myfunc,
-			dataName, NULL);
+			fontDataName, NULL);
 	  if (result == NULL) {
 	    PyErr_Print();
 	    exit(1);
 	  }
 		model_list = result;
-	  Py_DECREF(myfunc);
-	  Py_DECREF(mymodule);
 
     readTuples();
     while (optind < argc) { // each TIFF file
@@ -333,5 +300,8 @@ int main (int argc, char * const argv[]) {
     } // each file
 
 		Py_DECREF(result);
+		Py_DECREF(fontDataName);
+	  Py_DECREF(myfunc);
+	  Py_DECREF(mymodule);
     return(0);
 } // main

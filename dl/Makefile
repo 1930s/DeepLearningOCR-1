@@ -98,11 +98,11 @@ rotate:
 BASHEVIS = -H 600 -W 600 -d 30 -w 3 -h 5 -x -i -p 1.4 -s 0.4 -A -m 1.1
 bashevis-i:
 	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) \
-	-b bashevis ../tmp/bashevis-sotn-in-goray/page*.tif
+	../tmp/bashevis-sotn-in-goray/page*.tif
 
 bashevis-b:
 	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) -t \
-	-b bashevis	../tmp/bashevis-sotn-in-goray/page*.tif
+	../tmp/bashevis-sotn-in-goray/page*.tif
 
 bashevis-t:
 	python3 dl_train.py bashevis.data
@@ -111,11 +111,11 @@ bashevis-t:
 TEST = -H 600 -W 600 -d 15 -w 3 -h 4 -p 1.2 -m 1.0 -x -i
 test-i:
 	$(GOAL) -f ../fontData/english.data $(TEST) \
-	-b english ../samples/english.tif
+	../samples/english.tif
 
 test-b:
 	$(GOAL) -f ../fontData/english.data $(TEST) -t \
-	-b english ../samples/english.tif
+	../samples/english.tif
 
 # Train the Deep Network
 test-t:
