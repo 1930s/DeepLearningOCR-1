@@ -25,16 +25,16 @@ def load_saved_model(book_name):
 
     # print("Test accuracy:", test_acc)
 
-    with open("onehot.json", 'r') as onehot_json:
-        onehot_encoded = json.loads(onehot_json.read())
+    '''with open("onehot.json", 'r') as onehot_json:
+        onehot_encoded = json.loads(onehot_json.read())'''
     # print(onehot_encoded)
 
     dataset = np.genfromtxt("../fontData/" + book_name + ".data", dtype='str', delimiter=" ", encoding="utf8")
     expecteds = dataset[:, -1]
-    label_encoder = LabelEncoder()
-    label_encoder.fit_transform(expecteds)
+    # label_encoder = LabelEncoder()
+    # label_encoder.fit_transform(expecteds)
 
-    return loaded_model, onehot_encoded, label_encoder
+    return loaded_model, expecteds
 
 # Function that the C-program calls, return the predicted character
 def ocrValue(tuple_in, max_length, args):
@@ -45,8 +45,9 @@ def ocrValue(tuple_in, max_length, args):
     # loaded_model = model_json[0]
     # loaded_model = keras.models.load_model("model.h5")
     loaded_model = args[0]
-    onehot_encoded = args[1]
-    label_encoder = args[2]
+    expecteds = args[1]
+    # onehot_encoded = args[1]
+    # label_encoder = args[2]
     load_model_time = time.time()
 
     # onehot_encoded = model_json[1]
@@ -63,13 +64,14 @@ def ocrValue(tuple_in, max_length, args):
     # For some reason, the list comes in as length 54 but with only 27 elements
     # Extract the elements from indices 27 through 53
     temp = []
-    # print("reeeee", range(max_length, len(tuple_in)))
-    for dimension in range(max_length, len(tuple_in)):
-        if (dimension >= len(tuple_in) - 2):
-            temp.append(tuple_in[dimension] / 3)
+    # print("reeeee", range(len(tuple_in) - max_length, len(tuple_in)))
+    for dimension in range(-1 * max_length, 0):
+        if (dimension >= -2):
+            temp.append(float(tuple_in[dimension]) / 3.0)
         else:
-            temp.append(tuple_in[dimension])
+            temp.append(float(tuple_in[dimension]))
 
+    # print("\nreeeeeee", temp, "\n", len(temp))
     fix_tuple_time = time.time()
 
     # print("Length:", len(temp), "\t data:", temp)
@@ -78,7 +80,8 @@ def ocrValue(tuple_in, max_length, args):
     make_tensorflow_var_time = time.time()
 
     hot_index = np.argmax(loaded_model.predict(tuple_out, steps=1))
-    ret_char = str(label_encoder.inverse_transform([np.argmax(onehot_encoded[np.argmax(loaded_model.predict(tuple_out, steps=1))])])[0]).encode('utf-8')
+    # ret_char = str(label_encoder.inverse_transform([np.argmax(onehot_encoded[np.argmax(loaded_model.predict(tuple_out, steps=1))])])[0]).encode('utf-8')
+    ret_char = str(expecteds[hot_index]).encode('utf-8')
     # print("Python returned:", ret_char, type(ret_char))
     # print(ret_char.encode('utf-8'))
     # print(ret_char)
@@ -93,7 +96,7 @@ def ocrValue(tuple_in, max_length, args):
             end_time - make_tensorflow_var_time))
     '''
 
-    print("\nPrediction: ", ret_char.decode("utf8"), "Hot Index: ", hot_index, "\n", np.array(temp))
+    # print("\nPrediction: ", ret_char.decode("utf-8"), "Hot Index: ", hot_index, "\n", np.array(temp))
     return ret_char
 
 '''
@@ -106,7 +109,7 @@ for tup in tuples:
     expected_char = tup[-1]
     predicted = ocrValue(tup[0:-1], max, model).decode("utf8")
     print("\n  Expected:", expected_char, "\nPrediction:", predicted)
-    print(tup)
+    # print(tup)
     if (expected_char == predicted):
         correct_count += 1
     # time.sleep(0.25)

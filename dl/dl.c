@@ -73,7 +73,7 @@ char* callPythonFunc(char* filename, char* function, tuple_t args) {
     exit(1);
   }
   char* retval = (char*) PyBytes_AsString(result);
-  printf("%s", retval);
+  // printf("%s", retval);
   // retval = strdup(retval);
   // printf("Predicted: %s\n", retval);
   Py_DECREF(result);

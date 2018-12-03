@@ -33,14 +33,17 @@ def main():
         # Pre-trained fontData and expected characters with matching array indices
         dataset = np.genfromtxt("../fontData/" + sys.argv[1], dtype='str', delimiter=" ", encoding="utf8")
 
+        # shorten_length = 91
+        #dataset = dataset[:shorten_length]
+
         X = dataset[:,0:-1].astype(dtype='float')
         Y = dataset[:,-1]
         uniques = list(set(Y))
 
         n_input = 27
         n_neurons_in_h1 = 10
-        n_neurons_in_h2 = 25
-        n_neurons_in_h3 = 10
+        n_neurons_in_h2 = 50
+        n_neurons_in_h3 = 25
         n_classes = len(uniques)
 
         learning_rate = 0.001
@@ -66,8 +69,8 @@ def main():
         # print(inverted)
 
         onehot_list = onehot_encoded.tolist()
-        onehot_json = "onehot.json"
-        json.dump(onehot_list, codecs.open(onehot_json, 'w', encoding='utf-8'), sort_keys=True, indent=4)
+        # onehot_json = "onehot.json"
+        # json.dump(onehot_list, codecs.open(onehot_json, 'w', encoding='utf-8'), sort_keys=True, indent=4)
 
         # onehot_encoded is 2D array of either ones or zeroes, where only one 1 is in each line
         # its length is the same as the length of the fontData file (bad?)
@@ -90,6 +93,7 @@ def main():
         # print("test", test_images[0])
         # print("test", test_labels[0])
 
+        # print(test_images[0])
         # print(label_encoder.inverse_transform([np.argmax(test_labels[0, :])]))
 
         # Create a Neural Network with 3 hidden layers and 1 output layer
@@ -97,41 +101,31 @@ def main():
             keras.layers.Dense(units=n_neurons_in_h1, input_shape=(n_input,)),
             keras.layers.Dropout(0.2),
             keras.layers.Dense(units=n_neurons_in_h2),
-            keras.layers.Dense(units=n_neurons_in_h3, kernel_initializer="normal"),
-            keras.layers.Dense(units=n_classes, activation="softmax")
+            keras.layers.Dropout(0.2),
+            keras.layers.Dense(units=n_neurons_in_h3),
+            keras.layers.Dropout(0.2),
+            keras.layers.Dense(units=n_classes, activation="sigmoid")
         ])
 
-        model.compile(optimizer=keras.optimizers.Adam(lr=learning_rate),
+        optimizer = keras.optimizers.Adam(lr=learning_rate)
+        model.compile(optimizer=optimizer,
                       loss='categorical_crossentropy',
-                      metrics=['accuracy'])
+                      metrics=['categorical_accuracy'])
 
         # Train the model to the given fontData
         model.fit(train_images, train_labels, epochs=num_epochs, steps_per_epoch=steps_per_epoch)
 
         print("Performing tests")
         test_loss, test_acc = model.evaluate(test_images, test_labels)
+        # test_loss, test_acc = model.evaluate(train_images, train_labels)
 
         print("Test accuracy:", test_acc * 100, "%")
 
         # Test the model on the fontData, comparing expected and predicted output
         '''
-        print("Testing on fontData file...")
-        correct_count = 0
-        predictions = [model.predict(tf.constant(X[index], shape=[1, n_input]), steps=1) for index in range(len(X))]
-        for index in range(len(predictions)):
-            # print(predictions[index])
-            character = label_encoder.inverse_transform([np.argmax(predictions[index])])[0]
-            expected_char = label_encoder.inverse_transform([np.argmax(onehot_encoded[index])])[0]
-            print("\n  Expected:", expected_char)
-            print("Prediction:", character)
-            if (expected_char == character):
-                correct_count += 1
-            # time.sleep(0.25)
-        print("Num correct:", correct_count, "out of", len(predictions))
-        '''
-        '''
         book = "english"
         tuples = np.genfromtxt("../fontData/" + book + ".data", dtype='str', delimiter=" ", encoding="utf8")
+        tuples = tuples[:shorten_length]
         max = 27
         correct_count = 0
         for tup in tuples:
@@ -139,18 +133,25 @@ def main():
             tensor = tf.constant([float(val) for val in tup[0:-1]], shape=[1, n_input])
             probabilities = model.predict(tensor, steps=1)
             hot_index = np.argmax(probabilities)
-            endcoded_index = np.argmax(onehot_encoded[hot_index])
-            predicted = str(label_encoder.inverse_transform([endcoded_index])[0])
-            print("\n  Expected:", expected_char, "\nPrediction:", predicted, "\n     Index:", hot_index)
-            print("Other prediction:", tuples[hot_index][-1])
-            print(tup)
-            print(probabilities[0][hot_index])
-            print(probabilities)
-            if (expected_char == predicted):
+            # endcoded_index = np.argmax(onehot_encoded[hot_index])
+            # predicted = str(label_encoder.inverse_transform([endcoded_index])[0])
+            other_predicted = tuples[hot_index][-1]
+            print("\n  Expected:", expected_char, "\nPrediction:", other_predicted, "\n     Index:", hot_index)
+            # print("Other prediction:", other_predicted)
+            # print(tup)
+            # print(probabilities[0][hot_index])
+            # print(probabilities[0])
+            # n = 4
+            # n_highest = np.array(probabilities[0])[np.argsort(np.array(probabilities[0]))[-n:]]
+            # print(n_highest)
+
+            if (expected_char == other_predicted):
+                print("\tCorrect!!", other_predicted)
                 correct_count += 1
             # time.sleep(0.25)
         print("Num correct:", correct_count, "out of", len(tuples))
         '''
+
 
         # serialize model to JSON
         # model_json = model.to_json()

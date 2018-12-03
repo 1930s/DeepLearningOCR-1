@@ -268,7 +268,6 @@ int main (int argc, char * const argv[]) {
 	    exit(1);
 	  }
 		model_list = result;
-		// Py_DECREF(modelJsonString);
 	  Py_DECREF(myfunc);
 	  Py_DECREF(mymodule);
 
@@ -333,6 +332,6 @@ int main (int argc, char * const argv[]) {
         } while (anotherPage());
     } // each file
 
-		free(model_list);
+		Py_DECREF(result);
     return(0);
 } // main
