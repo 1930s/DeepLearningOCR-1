@@ -1,13 +1,26 @@
-Windows:
+Manually install on Windows:
 	Install Linux subsystem
-	download main folder of ~raphael/projects/ocr/
-		exclude lots of folders
+	Download this project including all folders
+
+	Run:
 	"make clean"
 	"make default"
-	keep doing "make default" and installing libraries until it compiles
-		you can now run batch (terminal) versions of this program
+	Keep doing "make default" and installing libraries until it compiles
+		You can now run batch (terminal) versions of this program
 
-	Download Xming
-	Run Xming
-	"export DISPLAY=:0"
-		you can now run interactive (GUI) versions of this program
+Automatically install on Linux:
+	(Also works with Linux subsystem)
+	In the /combined/ folder, run the setup.sh script
+	This *should* install all necessary libraries.
+		You can now run batch (terminal) versions of this program
+
+Interactive mode:
+	(This only works with the K-Dimensional Tree model)
+	Windows:
+		Download Xming
+		Run Xming
+		"export DISPLAY=:0"
+			You can now run interactive (GUI) versions of this program
+
+	Linux: (Not the subsystem)
+		The GUI version of this program *should* work out of the box

@@ -1,3 +1,4 @@
+# Resources used to create this project:
 # https://www.tensorflow.org/guide/keras
 # https://machinelearningmastery.com/tutorial-first-neural-network-python-keras/
 # https://www.pyimagesearch.com/2018/09/10/keras-tutorial-how-to-get-started-with-keras-deep-learning-and-python/

@@ -16,11 +16,9 @@ def ocrValueSVM(tuple_in, max_length):
     with open('svm_model.pkl', 'rb') as g:
         loaded_model = pickle.load(g)
 
-
     # For some reason, the list comes in as length 54 but with only 27 elements
     # Extract the elements from indices 27 through 53
     temp = []
-    # print("reeeee", range(max_length, len(tuple_in)))
     for dimension in range(max_length, len(tuple_in)):
         if (dimension >= len(tuple_in) - 2):
             temp.append(tuple_in[dimension] / 3)
