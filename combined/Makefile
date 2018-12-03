@@ -9,8 +9,10 @@ PANGOX = /usr/lib/x86_64-linux-gnu/libpangox-1.0.so.0
 LIBS += -ltiff `pkg-config --libs gtk+-2.0` $(BIDI) $(PANGOX)
 # LIBS += /tmp/dmalloc-5.5.2/libdmalloc.a
 OBJS = readPicture.o main.o segment.o display.o gtkDisplay.o categorize.o \
-	training.o template.o kd.o
+	training.o template.o kd.o dl.o svm.o
+JSONS = *.json *.h5
 INCLUDES = `pkg-config --cflags gtk+-2.0`
+PYTHON = -lpython3.6m -L /usr/lib/python3.6/config/ -I /usr/include/python3.6/
 OLDINCLUDES = -I /usr/include/gtk-2.0 -I /usr/include/glib-2.0 \
 	-I /usr/lib/x86_64-linux-gnu/glib-2.0/include \
 	-I /usr/lib/x86_64-linux-gnu/gtk-2.0/include \
@@ -27,19 +29,16 @@ default: $(GOAL)
 	gcc $(CFLAGS) $(INCLUDES) -c $*.c
 
 $(GOAL): $(OBJS) tags
-	gcc $(OBJS) $(LIBS) -o $(GOAL)
+	gcc $(OBJS) $(LIBS) $(PYTHON) -o $(GOAL)
 
 $(OBJS): ocr.h
-
-sample-i:
-	$(GOAL) -f ../fontData/english.data $(BASHEVIS) \
-	../samples/lorem01.tif
 
 tags: *.c *.h
 	ctags *.c *.h
 
 clean:
-	rm -f $(GOAL) $(OBJS)
+	rm -f $(GOAL) $(OBJS) *.pyc $(JSONS)
+	rm -f -r __pycache__/
 
 IMPORTANT = ocr/*.c ocr/*.h ocr/demo ocr/../fontData/yiddishData \
 	ocr/README ocr/Makefile ocr/COPYRIGHT ocr/fixutf8.pl
@@ -57,7 +56,7 @@ download:
 
 # a sample to show how to do it
 interactive: ocr
-	ocr -f fontData/yiddishData demo/nybc200960_0100
+	ocr -f ../fontData/yiddishData demo/nybc200960_0100
 
 # a sample to show how to do it
 batch: ocr
@@ -97,26 +96,44 @@ rotate:
 	done
 
 BASHEVIS = -H 600 -W 600 -d 30 -w 3 -h 5 -x -i -p 1.4 -s 0.4 -A -m 1.1
-bashevis-i:
+bashevis-i-KD:
 	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) \
-	../tmp/bashevis-sotn-in-goray/page*.tif
+	-K ../tmp/bashevis-sotn-in-goray/page*.tif
 
-bashevis-b:
+bashevis-b-KD:
 	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) -t \
-	../tmp/bashevis-sotn-in-goray/page*.tif | \
-		~/links/y/fixutf8.pl | fixSholem.pl | ~/links/y/fixspell.pl > \
-		../tmp/bashevis-sotn-in-goray/output.uyid
+	-K ../tmp/bashevis-sotn-in-goray/page*.tif
 
-bashevis-d:
+bashevis-b-DL:
 	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) -t \
-	../tmp/bashevis-sotn-in-goray/page*.tif
+	-D ../tmp/bashevis-sotn-in-goray/page*.tif
 
+bashevis-b-SVM:
+	$(OCR) -f ../fontData/bashevis.data $(BASHEVIS) -t \
+	-V ../tmp/bashevis-sotn-in-goray/page*.tif
+
+bashevis-t-DL:
+	python3 dl_train.py ../fontData/bashevis.data
+
+bashevis-t-SVM:
+	python3 svm_train.py ../fontData/bashevis.data
+
+# Lorem Ipsum fontData example
 TEST = -H 600 -W 600 -d 15 -w 3 -h 4 -p 1.2 -m 1.0 -x -i
-
-test-i:
-	$(GOAL) -f ../fontData/english.data $(TEST) \
-	../samples/lorem*.tif
-
-test-b:
+english-test-b-KD:
 	$(GOAL) -f ../fontData/english.data $(TEST) -t \
-	../samples/lorem*.tif
+	-K ../samples/lorem*.tif
+
+english-test-b-DL:
+	$(GOAL) -f ../fontData/english.data $(TEST) -t \
+	-D ../samples/lorem*.tif
+
+english-test-b-SVM:
+	$(GOAL) -f ../fontData/english.data $(TEST) -t \
+	-V ../samples/lorem*.tif
+
+english-test-t-DL:
+	python3 dl_train.py ../fontData/english.data
+
+english-test-t-SVM:
+	python3 svm_train.py ../fontData/english.data
