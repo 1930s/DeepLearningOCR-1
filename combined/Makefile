@@ -11,6 +11,7 @@ LIBS += -ltiff `pkg-config --libs gtk+-2.0` $(BIDI) $(PANGOX)
 OBJS = readPicture.o main.o segment.o display.o gtkDisplay.o categorize.o \
 	training.o template.o kd.o dl.o svm.o
 JSONS = *.json *.h5
+PKL = *.pkl
 INCLUDES = `pkg-config --cflags gtk+-2.0`
 PYTHON = -lpython3.6m -L /usr/lib/python3.6/config/ -I /usr/include/python3.6/
 OLDINCLUDES = -I /usr/include/gtk-2.0 -I /usr/include/glib-2.0 \
@@ -37,7 +38,7 @@ tags: *.c *.h
 	ctags *.c *.h
 
 clean:
-	rm -f $(GOAL) $(OBJS) *.pyc $(JSONS)
+	rm -f $(GOAL) $(OBJS) *.pyc $(JSONS) $(PKL)
 	rm -f -r __pycache__/
 
 IMPORTANT = ocr/*.c ocr/*.h ocr/demo ocr/../fontData/yiddishData \
