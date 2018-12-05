@@ -63,7 +63,7 @@ char* callPythonFuncDL(char* filename, char* function, tuple_t args) {
   // fprintf(stdout, "after build\n");
 
   PyObject *maxLength = Py_BuildValue("i", TUPLELENGTH);
-  PyObject *dataName = Py_BuildValue("s", fontFile);
+  // PyObject *dataName = Py_BuildValue("s", fontFile);
   // PyObject *modelJsonString = Py_BuildValue("s", modelJson);
   // Call the Python function using the arglist and get its result
   PyObject *result = PyObject_CallFunctionObjArgs(myfunc, built_tuple,
@@ -76,7 +76,6 @@ char* callPythonFuncDL(char* filename, char* function, tuple_t args) {
 
   Py_DECREF(result);
   Py_DECREF(maxLength);
-  Py_DECREF(dataName);
   Py_DECREF(built_tuple);
   Py_DECREF(myfunc);
   Py_DECREF(mymodule);

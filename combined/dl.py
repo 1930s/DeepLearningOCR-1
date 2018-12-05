@@ -12,8 +12,9 @@ import time # only use for demo video
 n_input = 27
 
 def load_saved_model(font_name):
+    base_name = path.splitext(path.basename(font_name))[0]
     # load HDF5 file into a model
-    loaded_model = keras.models.load_model("dl_model.h5")
+    loaded_model = keras.models.load_model(base_name + "_dl_model.h5")
 
     dataset = np.genfromtxt(font_name, dtype='str', delimiter=" ", encoding="utf8")
     expecteds = dataset[:, -1]

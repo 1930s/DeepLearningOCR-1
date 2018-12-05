@@ -10,11 +10,11 @@ from tensorflow import keras
 import time # only use for demo video
 
 # Function that the C-program calls, return the predicted character
-def ocrValueSVM(tuple_in, max_length):
-
+def ocrValueSVM(tuple_in, max_length, book_name):
+    base_name = path.splitext(path.basename(book_name))[0]
     # load the classifier
-    with open('svm_model.pkl', 'rb') as g:
-        loaded_model = pickle.load(g)
+    with open(base_name + '_svm_model.pkl', 'rb') as f:
+        loaded_model = pickle.load(f)
 
     # For some reason, the list comes in as length 54 but with only 27 elements
     # Extract the elements from indices 27 through 53

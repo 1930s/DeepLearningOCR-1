@@ -33,6 +33,7 @@ def main():
         print("Given filename for fontData doesn't exist")
         return 1
     else:
+        base_name = path.splitext(path.basename(sys.argv[1]))[0]
         # Pre-trained fontData and expected characters with matching array indices
         dataset = np.genfromtxt(sys.argv[1], dtype='str', delimiter=" ", encoding="utf8")
 
@@ -43,7 +44,7 @@ def main():
         clf.fit(X,Y)
 
         # save the classifier
-        with open('svm_model.pkl', 'wb') as f:
+        with open(base_name + '_svm_model.pkl', 'wb') as f:
             pickle.dump(clf, f)
 
 

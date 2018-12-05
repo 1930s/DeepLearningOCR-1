@@ -67,7 +67,7 @@ char* callPythonFuncSVM(char* filename, char* function, tuple_t args) {
   // PyObject *modelJsonString = Py_BuildValue("s", modelJson);
   // Call the Python function using the arglist and get its result
   PyObject *result = PyObject_CallFunctionObjArgs(myfunc, built_tuple,
-    maxLength, NULL);
+    maxLength, dataName, NULL);
   if (result == NULL) {
     PyErr_Print();
     exit(1);
