@@ -14,11 +14,12 @@ from sklearn.preprocessing import OneHotEncoder
 import sys
 import tensorflow as tf
 from tensorflow import keras
+from sklearn.externals import joblib
 
 import time # only use for demo video
 
 # Don't shorten printing numpy lists (i.e. don't use "...")
-# np.set_printoptions(threshold=np.nan)
+np.set_printoptions(threshold=np.nan)
 
 
 # Train the Deep Neural Network using a given filename
@@ -40,11 +41,10 @@ def main():
         uniques = list(set(Y))
 
         n_input = 27
-        n_neurons_in_h1 = 10
+        n_neurons_in_h1 = 100
         n_neurons_in_h2 = 50
         n_neurons_in_h3 = 25
         n_classes = len(uniques)
-
         learning_rate = 0.001
         num_epochs = 20
         steps_per_epoch = 100
@@ -52,6 +52,7 @@ def main():
         # Integer encode
         label_encoder = LabelEncoder()
         integer_encoded = label_encoder.fit_transform(Y)
+
         # Binary encode
         onehot_encoder = OneHotEncoder(sparse=False)
         integer_encoded = integer_encoded.reshape(len(integer_encoded), 1)
@@ -96,6 +97,16 @@ def main():
         # serialize weights to HDF5
         model.save(base_name + "_dl_model.h5")
 
+        # save encoding objects to PKL
+
+        joblib.dump(onehot_encoded, base_name + r'_dl_onehot.pkl')
+        joblib.dump(label_encoder, base_name + r'_dl_label_data.pkl')
+        '''
+        with open(base_name + "_onehot.pkl", "wb") as f:
+            pickle.dump(onehot_encoded, f)
+        with open(base_name + "_label_data.pkl", "wb") as g:
+            pickle.dump(label_encoder, g)
+        '''
         return 0
 
 
