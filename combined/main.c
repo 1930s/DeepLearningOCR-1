@@ -129,7 +129,7 @@ int main (int argc, char * const argv[]) {
             {0, 0, 0, 0}
         };
         int optionIndex;
-        int c = getopt_long(argc, argv, "f:th:w:s:m:H:W:g:p:c:iSL:xC:XAd:D:K:V",
+        int c = getopt_long(argc, argv, "f:th:w:s:m:H:W:g:p:c:iSL:xC:XAd:KDV",
             longOptions, &optionIndex);
         if (c == -1) break; // no more options
         switch (c) {
@@ -200,6 +200,10 @@ int main (int argc, char * const argv[]) {
                 fprintf(stdout, "unrecognized option\n");
                 usage();
                 break;
+						case 'K':
+								// K-Dimension Trees
+								isKD = true;
+								break;
 						case 'D':
 								// Deep Learning
 								isDL = true;
@@ -207,10 +211,6 @@ int main (int argc, char * const argv[]) {
 						case 'V':
 								// Support Vector Machine
 								isSVM = true;
-								break;
-						case 'K':
-								// K-Dimension Trees
-								isKD = true;
 								break;
         } // switch
     } // each option
@@ -223,7 +223,7 @@ int main (int argc, char * const argv[]) {
 	  PyObject *myfunc = NULL;
 	  PyObject *mymodule = NULL;
 
-		if (isDL == true) {
+		if (isDL) {
 				// Deep Learning needs to pre-load a file instead of loading it
 				// for each character
 

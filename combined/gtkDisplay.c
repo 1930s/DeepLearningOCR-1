@@ -183,13 +183,13 @@ void showText() { // called from a button; ignore any parameters
 			if (glyphPtr->left - prevRight > glyphWidth / 2) {
 				bufPtr += sprintf(bufPtr, " ");
 			}
-			if (isDL == true) {
+			if (isDL) {
 					bufPtr += sprintf(bufPtr, "%s", ocrValueDL(glyphPtr->tuple));
 			}
-			else if (isSVM == true) {
+			else if (isSVM) {
 					bufPtr += sprintf(bufPtr, "%s", ocrValueSVM(glyphPtr->tuple));
 			}
-			else if (isKD == true) {
+			else if (isKD) {
 					bufPtr += sprintf(bufPtr, "%s", ocrValue(glyphPtr->tuple));
 			}
 			prevRight = glyphPtr->right;
@@ -204,13 +204,13 @@ static int collectText(glyph_t *glyphPtr, char *buffer, int lengthAvailable) {
 	int filled = 0;
 	if (!glyphPtr) return 0;
 	if (lengthAvailable < 5) return(0); // don't get too close to end
-	if (isDL == true) {
+	if (isDL) {
 			strncpy(buffer, ocrValueDL(glyphPtr->tuple), lengthAvailable-1);
 	}
-	else if (isSVM == true) {
+	else if (isSVM) {
 			strncpy(buffer, ocrValueSVM(glyphPtr->tuple), lengthAvailable-1);
 	}
-	else if (isKD == true) {
+	else if (isKD) {
 			strncpy(buffer, ocrValue(glyphPtr->tuple), lengthAvailable-1);
 	}
 	lengthAvailable -= strlen(buffer);
